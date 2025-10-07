@@ -38,13 +38,13 @@ export default function RegisterPage() {
       {/* 🌊 BACKGROUND */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/offshore.jpg"
+          src="/offshore 3.jpg"
           alt="Background"
           fill
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/60 via-teal-400/40 to-pink-300/50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-700/50 via-blue-500/30 to-gray-700/40" />
       </div>
 
       {/* Header */}
@@ -58,14 +58,17 @@ export default function RegisterPage() {
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={120}
-              height={120}
+              width={150}
+              height={150}
               className="object-contain"
             />
           </Link>
         </div>
 
-        <Link href="/login" className="text-sm hover:text-gray-200 transition">
+        <Link
+          href="/login"
+          className="text-sm hover:text-gray-500 font-bold transition"
+        >
           Log in
         </Link>
       </div>
@@ -223,8 +226,8 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
-      <footer className="mt-auto py-4 text-center text-white text-sm space-y-1">
-        <p>Infradash Created by @Clinton Alfaro</p>
+      <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
+        <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
         <p>seatrium.com</p>
       </footer>
     </div>
