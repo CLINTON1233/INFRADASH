@@ -4,6 +4,13 @@ import { Globe, Monitor, Wifi } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Poppins } from "next/font/google";
+
+// 📝 Import font Poppins
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -11,21 +18,36 @@ export default function DashboardPage() {
   const apps = [
     {
       title: "IPAM",
-      description: "Manajemen alamat IP dan subnet jaringan",
+      fullName: "IP Address Management",
+      description: "IP address and subnet management",
       icon: Globe,
       url: "http://ipam.company.local",
+      status: "Operational",
+      owner: "Network Team",
+      lastUpdated: "2025-09-28",
+      tags: ["network", "ipam"],
     },
     {
       title: "WLC Controller",
-      description: "Pengelolaan akses point & jaringan wireless",
+      fullName: "Wireless LAN Controller",
+      description: "Access point and wireless network management",
       icon: Wifi,
       url: "http://wlc.company.local",
+      status: "Operational",
+      owner: "Wireless Team",
+      lastUpdated: "2025-09-25",
+      tags: ["wireless", "controller"],
     },
     {
       title: "VMware",
-      description: "Manajemen server virtual & data center",
+      fullName: "VMware vSphere",
+      description: "Virtual server and data center management",
       icon: Monitor,
       url: "http://vmware.company.local",
+      status: "Degraded",
+      owner: "Platform Team",
+      lastUpdated: "2025-09-30",
+      tags: ["virtualization", "compute"],
     },
   ];
 
@@ -34,8 +56,10 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="relative min-h-screen flex flex-col text-white">
-      {/* 🌊 Background Image + Gradient Overlay */}
+    <div
+      className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}
+    >
+      {/* 🌊 Background */}
       <div className="absolute inset-0 -z-10">
         <Image
           src="/offshore.jpg"
@@ -47,7 +71,7 @@ export default function DashboardPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-teal-500/60 via-teal-400/40 to-pink-300/50" />
       </div>
 
-      {/* 🧭 HEADER (Copy dari Login) */}
+      {/* 🧭 HEADER */}
       <header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
         <div className="flex items-center gap-2">
           <Link
@@ -64,17 +88,11 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Link
-            href="/profile"
-            className="text-sm hover:text-gray-200 transition"
-          >
+        <div className="flex items-center gap-4 text-sm font-medium">
+          <Link href="/profile" className="hover:text-gray-200 transition">
             Profile
           </Link>
-          <Link
-            href="/logout"
-            className="text-sm hover:text-gray-200 tra`nsition"
-          >
+          <Link href="/logout" className="hover:text-gray-200 transition">
             Logout
           </Link>
         </div>
@@ -85,50 +103,103 @@ export default function DashboardPage() {
         <h1 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-md">
           Infrastructure Dashboard
         </h1>
-        <p className="text-white/90 max-w-2xl mx-auto mb-6">
-          Akses seluruh aplikasi infrastruktur perusahaan dengan cepat & mudah —
-          IPAM, WLC Controller, VMware, dan lainnya dalam satu portal.
+        <p className="text-white/90 max-w-2xl mx-auto mb-6 text-base md:text-lg font-light">
+          Access all company infrastructure applications quickly & easily —
+          IPAM, WLC Controller, VMware, and more in a single portal.
         </p>
         <div className="flex justify-center space-x-4">
-          <button className="bg-blue-800 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition">
+          <button className="bg-blue-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition text-sm md:text-base">
             Open Portal
           </button>
-          <button className="border border-white text-white px-6 py-3 rounded-md font-semibold hover:bg-white hover:text-teal-700 transition">
+          <button className="border border-white text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-teal-700 transition text-sm md:text-base">
             Learn More
           </button>
         </div>
       </section>
 
-      {/* 🔍 Search Bar */}
+  {/* 🔍 Search Bar */}
       <div className="max-w-lg mx-auto mb-10 px-8">
         <input
           type="text"
           placeholder="Search applications..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-10 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 backdrop-blur-sm"
+          className="w-full px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 backdrop-blur-sm text-sm md:text-base"
         />
       </div>
 
-      {/* 🟩 Menu Section */}
+  {/* 🟩 Menu Section (card similar to login form) */}
       <section className="max-w-6xl mx-auto px-4 pb-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredApps.map((app, index) => (
           <div
             key={index}
+            className="cursor-pointer bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-lg text-gray-800 hover:shadow-xl transition transform hover:-translate-y-1 min-h-[260px] flex flex-col justify-between"
             onClick={() => (window.location.href = app.url)}
-            className="cursor-pointer rounded-xl p-6 text-center bg-white/90 backdrop-blur-sm text-gray-800 shadow hover:shadow-xl transition transform hover:-translate-y-1"
           >
-            <div className="flex justify-center mb-4 text-teal-600">
-              <app.icon className="w-12 h-12" />
+            <div>
+              <div className="flex justify-center mb-4 text-teal-600">
+                <app.icon className="w-14 h-14" />
+              </div>
+
+              <h3 className="text-xl font-semibold text-center mb-1">
+                {app.title}
+              </h3>
+              <div className="text-center text-xs text-gray-500 mb-3">
+                {app.fullName}
+              </div>
+
+              <p className="text-sm text-gray-600 text-center mb-4">
+                {app.description}
+              </p>
+
+              <div className="flex justify-center gap-2 mb-4">
+                {app.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
-            <h3 className="text-lg font-semibold">{app.title}</h3>
-            <p className="text-sm text-gray-600 mt-2">{app.description}</p>
+
+            <div className="flex items-center justify-between mt-3">
+              <div className="flex items-center gap-3">
+                <span
+                  className={`inline-block w-3 h-3 rounded-full ${
+                    app.status === "Operational"
+                      ? "bg-green-500"
+                      : app.status === "Degraded"
+                      ? "bg-yellow-400"
+                      : "bg-red-500"
+                  }`}
+                  aria-hidden
+                />
+                <div className="text-xs text-gray-600">
+                  <div className="font-medium">{app.status}</div>
+                  <div className="text-[11px]">Updated {app.lastUpdated}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(app.url, "_blank");
+                  }}
+                  className="text-sm px-3 py-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition"
+                >
+                  Open
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto py-4 text-center text-white text-sm space-y-1 border-t border-white/30">
+      <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
         <p>Infradash Created by @Clinton Alfaro</p>
         <p>seatrium.com</p>
       </footer>
