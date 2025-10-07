@@ -13,17 +13,34 @@ const poppins = Poppins({
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
+    nama: "",
     email: "",
-    phone: "",
     password: "",
     badge: "",
     telp: "",
     departemen: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    try {
+      const res = await fetch("http://localhost:4000/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, role: "user" }),
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.status === "success") {
+        alert("Registration successful!");
+        window.location.href = "/login";
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Registration failed!");
+    }
   };
 
   const handleChange = (e) => {
@@ -49,7 +66,6 @@ export default function RegisterPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
-        {/* Back with logo */}
         <div className="flex items-center gap-2">
           <Link
             href="#"
@@ -75,7 +91,6 @@ export default function RegisterPage() {
 
       {/* Main Content */}
       <div className="max-w-lg w-full mx-auto px-4 py-10">
-        {/* Title */}
         <div className="flex flex-col items-center mb-8 text-center text-white">
           <h1 className="text-2xl font-bold mb-1">Get Started Now!</h1>
           <p className="text-sm opacity-90">
@@ -88,6 +103,23 @@ export default function RegisterPage() {
           onSubmit={handleSubmit}
           className="space-y-6 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-lg"
         >
+          {/* Nama */}
+          <div>
+            <label htmlFor="nama" className="block text-sm text-gray-700 mb-1">
+              Nama Lengkap
+            </label>
+            <input
+              type="text"
+              id="nama"
+              name="nama"
+              value={formData.nama}
+              onChange={handleChange}
+              required
+              placeholder="Masukkan nama lengkap"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm text-gray-700 mb-1">
@@ -100,21 +132,6 @@ export default function RegisterPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label htmlFor="phone" className="block text-sm text-gray-700 mb-1">
-              Phone number (optional)
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -160,7 +177,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Telepon */}
+          {/* No. Telepon */}
           <div>
             <label htmlFor="telp" className="block text-sm text-gray-700 mb-1">
               No. Telepon
@@ -204,7 +221,6 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        {/* Terms */}
         <p className="text-xs text-white mt-6 text-center opacity-90">
           By creating an account, you agree to the{" "}
           <Link href="/terms" className="underline">
@@ -216,7 +232,6 @@ export default function RegisterPage() {
           </Link>
         </p>
 
-        {/* Already have an account */}
         <div className="text-center mt-4">
           <p className="text-sm text-white">
             Already have an account?{" "}
