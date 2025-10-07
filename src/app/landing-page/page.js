@@ -35,27 +35,9 @@ export default function LandingPage() {
               />
             </Link>
           </div>
+            </div>
 
-          {/* Navigation Menu */}
-          <div className="hidden md:flex space-x-6 text-white">
-            <Link href="/" className="hover:text-gray-200 transition">
-              Home
-            </Link>
-            <Link href="/ipam" className="hover:text-gray-200 transition">
-              IPAM
-            </Link>
-            <Link href="/wlc" className="hover:text-gray-200 transition">
-              WLC Controller
-            </Link>
-            <Link href="/vmware" className="hover:text-gray-200 transition">
-              VMware
-            </Link>
-            <Link href="/inventory" className="hover:text-gray-200 transition">
-              Inventory
-            </Link>
-          </div>
-        </div>
-
+      
         {/* Right: Action Buttons */}
         <div className="flex items-center space-x-3">
           <button className="hidden md:flex items-center space-x-2 text-white hover:text-gray-200 transition">
