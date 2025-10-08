@@ -1,6 +1,13 @@
 "use client";
 
-import { Globe, Monitor, Wifi, CheckCircle, AlertTriangle, X } from "lucide-react";
+import {
+  Globe,
+  Monitor,
+  Wifi,
+  CheckCircle,
+  AlertTriangle,
+  X,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,9 +44,24 @@ export default function DashboardPage() {
   }, []);
 
   const apps = [
-    { title: "IPAM", fullName: "IP Address Management", icon: Globe, url: "http://10.5.252.156" },
-    { title: "WLC Controller", fullName: "Wireless LAN Controller", icon: Wifi, url: "https://10.5.252.64:8443" },
-    { title: "VMware", fullName: "VMware vSphere", icon: Monitor, url: "https://10.5.252.101" },
+    {
+      title: "IPAM",
+      fullName: "IP Address Management",
+      icon: Globe,
+      url: "http://10.5.252.156",
+    },
+    {
+      title: "WLC Controller",
+      fullName: "Wireless LAN Controller",
+      icon: Wifi,
+      url: "https://10.5.252.64:8443",
+    },
+    {
+      title: "VMware",
+      fullName: "VMware vSphere",
+      icon: Monitor,
+      url: "https://10.5.252.101",
+    },
   ];
 
   const filteredApps = apps.filter((app) =>
@@ -48,12 +70,14 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    sessionStorage.removeItem("loginSuccessShown"); // reset agar muncul lagi saat login ulang
+    sessionStorage.removeItem("loginSuccessShown");
     window.location.href = "/login";
   };
 
   return (
-    <div className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}>
+    <div
+      className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}
+    >
       {/* Background */}
       <div className="absolute inset-0 -z-10">
         <Image
@@ -75,43 +99,60 @@ export default function DashboardPage() {
 
       {/* HEADER */}
       <header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
-     <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 text-sm hover:text-gray-200 transition">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm hover:text-gray-200 transition"
+          >
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={150}
-              height={150}
+              width={130}
+              height={130}
               className="object-contain"
             />
           </Link>
 
           {/* 🟦 Sambutan User */}
           {user && (
-            <div className="text-sm md:text-base font-semibold text-white  px-4 py-2 rounded-full shadow-md">
-              Selamat Datang, {user.nama} {user.role === "admin" && "(Admin)"} 👋
+            <div className="text-sm md:text-base font-grey-700 text-white  px-4 py-2 rounded-full shadow-md">
+              Selamat Datang, {user.nama} {user.role === "admin" && "(Admin)"}{" "}
+              👋
             </div>
           )}
         </div>
 
         <div className="flex items-center gap-4 text-sm text-black font-medium">
-          <Link href="/profile" className="hover:text-gray-200 transition">
+          <Link
+            href="/admin/dashboard"
+            className="hover:text-gray-200 transition"
+          >
+            Dashboard
+          </Link>
+          <Link
+            href="/admin/profile"
+            className="hover:text-gray-200 transition"
+          >
             Profile
           </Link>
-          <button onClick={() => setShowLogoutModal(true)} className="hover:text-gray-200 transition">
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="hover:text-gray-200 transition"
+          >
             Logout
           </button>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="max-w-5xl mx-auto text-center py-8 px-4">
-        <h1 className="text-4xl md:text-5xl text-black font-bold mb-4 drop-shadow-md">
+      <section className="max-w-5xl mx-auto text-center py-6 px-4 sm:py-10 sm:px-6">
+        <h1 className="text-3xl sm:text-4xl md:text-4xl font-medium text-black mb-4 drop-shadow-md">
           IT Infrastructure Dashboard
         </h1>
-        <p className="text-black/90 max-w-2xl mx-auto mb-6 text-base md:text-lg font-light">
-          Access all company infrastructure applications quickly & easily — manage network, wireless,
-          and virtual environments seamlessly in a single portal.
+        <p className="text-black/90 max-w-2xl mx-auto mb-6 text-sm sm:text-base md:text-lg font-light">
+          Access all company infrastructure applications quickly & easily —
+          manage network, wireless, and virtual environments seamlessly in a
+          single portal.
         </p>
       </section>
 
@@ -145,29 +186,40 @@ export default function DashboardPage() {
         ))}
       </section>
 
-       {/* Logout Modal */}
+      {/* Logout Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-10 w-96 text-center shadow-xl">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 sm:p-10 w-full sm:max-w-md shadow-2xl animate-fade-in relative text-center">
+            {/* Icon */}
             <div className="flex justify-center mb-4">
               <AlertTriangle className="w-16 h-16 text-yellow-500" />
             </div>
-            <h2 className="text-2xl font-semibold mb-2 text-gray-800">Logout Confirmation</h2>
-            <p className="text-gray-600 mb-6 text-base">Are you sure you want to logout from your account?</p>
-            <div className="flex justify-between gap-6">
+
+            {/* Title */}
+            <h2 className="text-2xl font-medium mb-2 text-gray-800">
+              Logout Confirmation
+            </h2>
+
+            {/* Description */}
+            <p className="text-gray-700 mb-6 text-base">
+              Are you sure you want to logout from your account?
+            </p>
+
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row justify-between gap-4">
               <button
                 onClick={() => setShowLogoutModal(false)}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-base"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition text-base font-grey-500"
               >
                 <X className="w-5 h-5" />
                 Cancel
               </button>
               <button
                 onClick={handleLogout}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-base"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-base font-grey-500"
               >
                 <CheckCircle className="w-5 h-5" />
-                Yes
+                Yes, Logout
               </button>
             </div>
           </div>

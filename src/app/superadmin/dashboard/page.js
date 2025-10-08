@@ -144,7 +144,7 @@ export default function DashboardPage() {
               Dashboard
             </Link>
             <Link
-              href="/profile"
+              href="/superadmin/profile"
               className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
             >
               Profile
