@@ -5,8 +5,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
+import { X, CheckCircle, AlertTriangle } from "lucide-react";
 
-// Import font Poppins
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -14,46 +14,38 @@ const poppins = Poppins({
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // state modal
 
   const apps = [
     {
       title: "IPAM",
       fullName: "IP Address Management",
-      description: "IP address and subnet management",
       icon: Globe,
       url: "https://10.5.252.161",
-      status: "Operational",
-      owner: "Network Team",
-      lastUpdated: "2025-09-28",
-      tags: ["network", "ipam"],
     },
     {
       title: "WLC Controller",
       fullName: "Wireless LAN Controller",
-      description: "Access point and wireless network management",
       icon: Wifi,
       url: "https://10.5.252.64:8443",
-      status: "Operational",
-      owner: "Wireless Team",
-      lastUpdated: "2025-09-25",
-      tags: ["wireless", "controller"],
     },
     {
       title: "VMware",
       fullName: "VMware vSphere",
-      description: "Virtual server and data center management",
       icon: Monitor,
       url: "https://10.5.252.101",
-      status: "Degraded",
-      owner: "Platform Team",
-      lastUpdated: "2025-09-30",
-      tags: ["virtualization", "compute"],
     },
   ];
 
   const filteredApps = apps.filter((app) =>
     app.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Fungsi logout
+  const handleLogout = () => {
+    // bisa arahkan ke halaman logout atau clear session
+    window.location.href = "/login";
+  };
 
   return (
     <div
@@ -62,13 +54,12 @@ export default function DashboardPage() {
       {/* Background */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/offshore.jpg"
+          src="/offshore 3.jpg"
           alt="Background"
           fill
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/60 via-teal-400/40 to-pink-300/50" />
       </div>
 
       {/* HEADER */}
@@ -81,46 +72,41 @@ export default function DashboardPage() {
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={120}
-              height={120}
+              width={150}
+              height={150}
               className="object-contain"
             />
           </Link>
         </div>
 
-        <div className="flex items-center gap-4 text-sm font-medium">
+        <div className="flex items-center gap-4 text-sm text-black font-medium">
           <Link href="/profile" className="hover:text-gray-200 transition">
             Profile
           </Link>
-          <Link href="/logout" className="hover:text-gray-200 transition">
+          {/* Logout button */}
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="hover:text-gray-200 transition"
+          >
             Logout
-          </Link>
+          </button>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="max-w-5xl mx-auto text-center py-16 px-4">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-md">
-          Infrastructure Dashboard
+      <section className="max-w-5xl mx-auto text-center py-8 px-4">
+        <h1 className="text-4xl md:text-5xl text-black font-bold mb-4 drop-shadow-md">
+          IT Infrastructure Dashboard
         </h1>
-        <p className="text-white/90 max-w-2xl mx-auto mb-6 text-base md:text-lg font-light">
+        <p className="text-black/90 max-w-2xl mx-auto mb-6 text-base md:text-lg font-light">
           Access all company infrastructure applications quickly & easily —
-          IPAM, WLC Controller, VMware, and more in a single portal.
+          manage network, wireless, and virtual environments seamlessly in a
+          single portal.
         </p>
-       <div className="flex flex-col items-center mt-6 space-y-3">
-  <Link
-    href="/dashboard"
-    className="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-full shadow-lg transition transform hover:scale-105"
-  >
-    Launch Dashboard
-  </Link>
- 
-</div>
-
       </section>
 
-  {/*  Search Bar */}
-      <div className="max-w-lg mx-auto mb-10 px-8">
+      {/* Search Bar */}
+      <div className="max-w-lg mx-auto mb-10 px-8 text-black">
         <input
           type="text"
           placeholder="Search applications..."
@@ -130,71 +116,20 @@ export default function DashboardPage() {
         />
       </div>
 
-  {/*  Menu Section (card similar to login form) */}
+      {/* Menu Section */}
       <section className="max-w-6xl mx-auto px-4 pb-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredApps.map((app, index) => (
           <div
             key={index}
-            className="cursor-pointer bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-lg text-gray-800 hover:shadow-xl transition transform hover:-translate-y-1 min-h-[260px] flex flex-col justify-between"
+            className="cursor-pointer bg-blue-600 text-white p-8 rounded-3xl shadow-lg hover:bg-white hover:text-blue-600 transition transform hover:-translate-y-2 min-h-[250px] flex flex-col justify-center items-center text-center"
             onClick={() => (window.location.href = app.url)}
           >
-            <div>
-              <div className="flex justify-center mb-4 text-teal-600">
-                <app.icon className="w-14 h-14" />
-              </div>
-
-              <h3 className="text-xl font-semibold text-center mb-1">
-                {app.title}
-              </h3>
-              <div className="text-center text-xs text-gray-500 mb-3">
-                {app.fullName}
-              </div>
-
-              <p className="text-sm text-gray-600 text-center mb-4">
-                {app.description}
-              </p>
-
-              <div className="flex justify-center gap-2 mb-4">
-                {app.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+            <div className="flex justify-center mb-4">
+              <app.icon className="w-16 h-16 transition-colors duration-300" />
             </div>
-
-            <div className="flex items-center justify-between mt-3">
-              <div className="flex items-center gap-3">
-                <span
-                  className={`inline-block w-3 h-3 rounded-full ${
-                    app.status === "Operational"
-                      ? "bg-green-500"
-                      : app.status === "Degraded"
-                      ? "bg-yellow-400"
-                      : "bg-red-500"
-                  }`}
-                  aria-hidden
-                />
-                <div className="text-xs text-gray-600">
-                  <div className="font-medium">{app.status}</div>
-                  <div className="text-[11px]">Updated {app.lastUpdated}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(app.url, "_blank");
-                  }}
-                  className="text-sm px-3 py-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition"
-                >
-                  Open
-                </button>
-              </div>
+            <h3 className="text-xl font-semibold mb-2">{app.title}</h3>
+            <div className="text-sm md:text-base text-white/90 hover:text-blue-600 transition-colors">
+              {app.fullName}
             </div>
           </div>
         ))}
@@ -202,9 +137,53 @@ export default function DashboardPage() {
 
       {/* Footer */}
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
-        <p>Infradash Created by @Clinton Alfaro</p>
+        <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
         <p>seatrium.com</p>
       </footer>
+
+      {/* Logout Confirmation Modal */}
+
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-10 w-96 text-center shadow-xl">
+            {/* Warning Icon */}
+            <div className="flex justify-center mb-4">
+              <AlertTriangle className="w-16 h-16 text-yellow-500" />
+            </div>
+
+            {/* Title */}
+            <h2 className="text-2xl font-semibold mb-2 text-gray-800">
+              Logout Confirmation
+            </h2>
+
+            {/* Description */}
+            <p className="text-gray-600 mb-6 text-base">
+              Are you sure you want to logout from your account?
+            </p>
+
+            {/* Buttons */}
+            <div className="flex justify-between gap-6">
+              {/* Cancel Button */}
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-base"
+              >
+                <X className="w-5 h-5" />
+                Cancel
+              </button>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-base"
+              >
+                <CheckCircle className="w-5 h-5" />
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
