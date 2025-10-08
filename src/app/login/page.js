@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -19,12 +20,54 @@ export default function LoginPage() {
     password: "",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login submitted:", formData);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    router.push("/dashboard");
-  };
+  try {
+    const res = await fetch("http://localhost:4000/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+    console.log(data);
+
+    if (data.status === "success") {
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Tampilkan SweetAlert sukses
+      await Swal.fire({
+        title: "Login Berhasil",
+        text: `Selamat datang ${data.user.nama}!`,
+        icon: "success",
+        confirmButtonColor: "#1e40af",
+      });
+
+      // Arahkan berdasarkan role
+      if (data.user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
+    } else {
+      Swal.fire({
+        title: "Login Gagal",
+        text: data.message || "Email atau password salah.",
+        icon: "error",
+        confirmButtonText: "Coba Lagi",
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      title: "Error",
+      text: "Gagal terhubung ke server.",
+      icon: "error",
+    });
+  }
+};
+
 
   const handleChange = (e) => {
     setFormData({
@@ -74,7 +117,7 @@ export default function LoginPage() {
       {/* Main Content */}
       <div className="max-w-lg w-full mx-auto px-4 py-10">
         {/* Title di atas form */}
-        <div className="flex flex-col items-center mb-8 text-center text-white">
+        <div className="flex flex-col items-center mb-6 text-center text-white">
           <h1 className="text-3xl font-bold mb-0">Welcome Back!</h1>
           <p className="text-base opacity-90">Log in to access your account</p>
         </div>

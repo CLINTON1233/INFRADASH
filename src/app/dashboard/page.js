@@ -14,14 +14,14 @@ const poppins = Poppins({
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // state modal
+  const [showLogoutModal, setShowLogoutModal] = useState(false); 
 
   const apps = [
     {
       title: "IPAM",
       fullName: "IP Address Management",
       icon: Globe,
-      url: "https://10.5.252.161",
+      url: "http://10.5.252.156",
     },
     {
       title: "WLC Controller",
@@ -112,7 +112,7 @@ export default function DashboardPage() {
           placeholder="Search applications..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 backdrop-blur-sm text-sm md:text-base"
+          className="w-full mb-4 px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 backdrop-blur-sm text-sm md:text-base"
         />
       </div>
 

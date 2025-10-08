@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
+import Swal from "sweetalert2";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -19,36 +20,61 @@ export default function RegisterPage() {
     badge: "",
     telp: "",
     departemen: "",
+    role: "user", // default user
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("http://localhost:4000/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, role: "user" }),
-      });
-      const data = await res.json();
-      console.log(data);
-      if (data.status === "success") {
-        alert("Registration successful!");
-        window.location.href = "/login";
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Registration failed!");
-    }
+  // Handles input changes for all fields
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const isAdmin = formData.email === "admin@gmail.com";
+
+  try {
+    const res = await fetch("http://localhost:4000/users/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...formData,  
+        role: isAdmin ? "admin" : "user",
+      }),
     });
-  };
+
+    const data = await res.json();
+    console.log(data);
+
+    if (data.status === "success") {
+      Swal.fire({
+        title: "Registrasi Berhasil ",
+        text: `Silahkan Login untuk mengakses portal.`,
+        icon: "success",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#1e40af", 
+      }).then(() => {
+        window.location.href = "/login";
+      });
+    } else {
+      Swal.fire({
+        title: "Registrasi Gagal",
+        text: data.message || "Terjadi kesalahan saat registrasi.",
+        icon: "error",
+        confirmButtonText: "Coba Lagi",
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      title: "Error",
+      text: "Gagal terhubung ke server!",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
+  }
+};
 
   return (
     <div className={`relative min-h-screen flex flex-col ${poppins.className}`}>
@@ -210,6 +236,23 @@ export default function RegisterPage() {
               placeholder="IT Department"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
+          </div>
+
+          {/* Role Dropdown */}
+          <div>
+            <label htmlFor="role" className="block text-sm text-gray-700 mb-1">
+              Role
+            </label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
 
           {/* Submit */}
