@@ -34,19 +34,33 @@ export default function LoginPage() {
       console.log(data);
 
       if (data.status === "success") {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        // ambil user dari backend
+        const user = data.user;
+
+        // simpan semua field
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: user.id,
+            nama: user.nama,
+            email: user.email,
+            badge: user.badge || "",
+            telp: user.telp || "",
+            departemen: user.departemen || "",
+            role: user.role,
+          })
+        );
 
         await Swal.fire({
           title: "Login Berhasil",
-          text: `Selamat datang ${data.user.nama}!`,
+          text: `Selamat datang ${user.nama}!`,
           icon: "success",
           confirmButtonColor: "#1e40af",
         });
 
-        // ✅ Arahkan berdasarkan role
-        if (data.user.role === "superadmin") {
+        if (user.role === "superadmin") {
           router.push("/superadmin/dashboard");
-        } else if (data.user.role === "admin") {
+        } else if (user.role === "admin") {
           router.push("/admin/dashboard");
         } else {
           router.push("/dashboard");

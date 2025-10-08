@@ -36,7 +36,7 @@ export default function RegisterPage() {
       const res = await fetch("http://localhost:4000/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData), // ✅ langsung kirim role sesuai dropdown
+        body: JSON.stringify(formData), //  langsung kirim role sesuai dropdown
       });
 
       const data = await res.json();
@@ -45,7 +45,7 @@ export default function RegisterPage() {
       if (data.status === "success") {
         Swal.fire({
           title: "Registrasi Berhasil",
-          text: `Akun dengan role ${formData.role.toUpperCase()} berhasil dibuat.`,
+          text: `Silahkan login untuk mengakses sistem.`,
           icon: "success",
           confirmButtonText: "OK",
           confirmButtonColor: "#1e40af",
