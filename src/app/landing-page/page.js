@@ -119,7 +119,7 @@ export default function LandingPage() {
         {/* Background */}
         <div className="absolute inset-0 -z-10">
           <Image
-            src="/offshore 3.jpg"
+            src="/banner.png"
             alt="Background"
             fill
             className="object-cover"

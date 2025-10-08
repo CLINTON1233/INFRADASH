@@ -20,54 +20,54 @@ export default function LoginPage() {
     password: "",
   });
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:4000/users/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    if (data.status === "success") {
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Tampilkan SweetAlert sukses
-      await Swal.fire({
-        title: "Login Berhasil",
-        text: `Selamat datang ${data.user.nama}!`,
-        icon: "success",
-        confirmButtonColor: "#1e40af",
+    try {
+      const res = await fetch("http://localhost:4000/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
-      // Arahkan berdasarkan role
-      if (data.user.role === "admin") {
-        router.push("/admin");
+      const data = await res.json();
+      console.log(data);
+
+      if (data.status === "success") {
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        await Swal.fire({
+          title: "Login Berhasil",
+          text: `Selamat datang ${data.user.nama}!`,
+          icon: "success",
+          confirmButtonColor: "#1e40af",
+        });
+
+        // ✅ Arahkan berdasarkan role
+        if (data.user.role === "superadmin") {
+          router.push("/superadmin/dashboard");
+        } else if (data.user.role === "admin") {
+          router.push("/admin/dashboard");
+        } else {
+          router.push("/dashboard");
+        }
       } else {
-        router.push("/dashboard");
+        Swal.fire({
+          title: "Login Gagal",
+          text: data.message || "Email atau password salah.",
+          icon: "error",
+          confirmButtonText: "Coba Lagi",
+        });
       }
-    } else {
+    } catch (err) {
+      console.error(err);
       Swal.fire({
-        title: "Login Gagal",
-        text: data.message || "Email atau password salah.",
+        title: "Error",
+        text: "Gagal terhubung ke server.",
         icon: "error",
-        confirmButtonText: "Coba Lagi",
       });
     }
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      title: "Error",
-      text: "Gagal terhubung ke server.",
-      icon: "error",
-    });
-  }
-};
-
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -81,7 +81,7 @@ export default function LoginPage() {
       {/* 🌊 BACKGROUND */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/offshore 3.jpg"
+          src="/bg_seatrium 3.png"
           alt="Background"
           fill
           className="object-cover"

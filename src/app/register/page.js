@@ -20,7 +20,7 @@ export default function RegisterPage() {
     badge: "",
     telp: "",
     departemen: "",
-    role: "user", // default user
+    role: "admin",
   });
 
   // Handles input changes for all fields
@@ -29,59 +29,54 @@ export default function RegisterPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const isAdmin = formData.email === "admin@gmail.com";
-
-  try {
-    const res = await fetch("http://localhost:4000/users/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...formData,  
-        role: isAdmin ? "admin" : "user",
-      }),
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    if (data.status === "success") {
-      Swal.fire({
-        title: "Registrasi Berhasil ",
-        text: `Silahkan Login untuk mengakses portal.`,
-        icon: "success",
-        confirmButtonText: "OK",
-        confirmButtonColor: "#1e40af", 
-      }).then(() => {
-        window.location.href = "/login";
+    try {
+      const res = await fetch("http://localhost:4000/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData), // ✅ langsung kirim role sesuai dropdown
       });
-    } else {
+
+      const data = await res.json();
+      console.log(data);
+
+      if (data.status === "success") {
+        Swal.fire({
+          title: "Registrasi Berhasil",
+          text: `Akun dengan role ${formData.role.toUpperCase()} berhasil dibuat.`,
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#1e40af",
+        }).then(() => {
+          window.location.href = "/login";
+        });
+      } else {
+        Swal.fire({
+          title: "Registrasi Gagal",
+          text: data.message || "Terjadi kesalahan saat registrasi.",
+          icon: "error",
+          confirmButtonText: "Coba Lagi",
+        });
+      }
+    } catch (err) {
+      console.error(err);
       Swal.fire({
-        title: "Registrasi Gagal",
-        text: data.message || "Terjadi kesalahan saat registrasi.",
+        title: "Error",
+        text: "Gagal terhubung ke server!",
         icon: "error",
-        confirmButtonText: "Coba Lagi",
+        confirmButtonText: "OK",
       });
     }
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      title: "Error",
-      text: "Gagal terhubung ke server!",
-      icon: "error",
-      confirmButtonText: "OK",
-    });
-  }
-};
+  };
 
   return (
     <div className={`relative min-h-screen flex flex-col ${poppins.className}`}>
       {/* 🌊 BACKGROUND */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/offshore 3.jpg"
+          src="/bg_seatrium 3.png"
           alt="Background"
           fill
           className="object-cover"
@@ -250,8 +245,8 @@ const handleSubmit = async (e) => {
               onChange={handleChange}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="user">User</option>
               <option value="admin">Admin</option>
+              <option value="superadmin">Superadmin</option>
             </select>
           </div>
 

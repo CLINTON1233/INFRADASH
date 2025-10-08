@@ -1,11 +1,10 @@
 "use client";
 
-import { Globe, Monitor, Wifi } from "lucide-react";
-import { useState } from "react";
+import { Globe, Monitor, Wifi, CheckCircle, AlertTriangle, X } from "lucide-react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
-import { X, CheckCircle, AlertTriangle } from "lucide-react";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -14,47 +13,51 @@ const poppins = Poppins({
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [showLogoutModal, setShowLogoutModal] = useState(false); 
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showLoginSuccess, setShowLoginSuccess] = useState(false); // ✅ notifikasi login sukses
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+
+      // ✅ Munculkan alert login sukses hanya saat pertama kali masuk
+      const hasShown = sessionStorage.getItem("loginSuccessShown");
+      if (!hasShown) {
+        setShowLoginSuccess(true);
+        sessionStorage.setItem("loginSuccessShown", "true");
+
+        // ⏱️ Hilangkan otomatis dalam 3 detik
+        setTimeout(() => {
+          setShowLoginSuccess(false);
+        }, 3000);
+      }
+    }
+  }, []);
 
   const apps = [
-    {
-      title: "IPAM",
-      fullName: "IP Address Management",
-      icon: Globe,
-      url: "http://10.5.252.156",
-    },
-    {
-      title: "WLC Controller",
-      fullName: "Wireless LAN Controller",
-      icon: Wifi,
-      url: "https://10.5.252.64:8443",
-    },
-    {
-      title: "VMware",
-      fullName: "VMware vSphere",
-      icon: Monitor,
-      url: "https://10.5.252.101",
-    },
+    { title: "IPAM", fullName: "IP Address Management", icon: Globe, url: "http://10.5.252.156" },
+    { title: "WLC Controller", fullName: "Wireless LAN Controller", icon: Wifi, url: "https://10.5.252.64:8443" },
+    { title: "VMware", fullName: "VMware vSphere", icon: Monitor, url: "https://10.5.252.101" },
   ];
 
   const filteredApps = apps.filter((app) =>
     app.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Fungsi logout
   const handleLogout = () => {
-    // bisa arahkan ke halaman logout atau clear session
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("loginSuccessShown"); // reset agar muncul lagi saat login ulang
     window.location.href = "/login";
   };
 
   return (
-    <div
-      className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}
-    >
+    <div className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}>
       {/* Background */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/offshore 3.jpg"
+          src="/bg_seatrium 3.png"
           alt="Background"
           fill
           className="object-cover"
@@ -62,13 +65,18 @@ export default function DashboardPage() {
         />
       </div>
 
+      {/* ✅ Alert Login Sukses */}
+      {showLoginSuccess && (
+        <div className="fixed top-4 right-4 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in z-50">
+          <CheckCircle className="w-5 h-5" />
+          <span className="text-sm font-medium">Login Berhasil!</span>
+        </div>
+      )}
+
       {/* HEADER */}
       <header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
-        <div className="flex items-center gap-2">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm hover:text-gray-200 transition"
-          >
+     <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center gap-2 text-sm hover:text-gray-200 transition">
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
@@ -77,17 +85,20 @@ export default function DashboardPage() {
               className="object-contain"
             />
           </Link>
+
+          {/* 🟦 Sambutan User */}
+          {user && (
+            <div className="text-sm md:text-base font-semibold text-white  px-4 py-2 rounded-full shadow-md">
+              Selamat Datang, {user.nama} {user.role === "admin" && "(Admin)"} 👋
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-4 text-sm text-black font-medium">
           <Link href="/profile" className="hover:text-gray-200 transition">
             Profile
           </Link>
-          {/* Logout button */}
-          <button
-            onClick={() => setShowLogoutModal(true)}
-            className="hover:text-gray-200 transition"
-          >
+          <button onClick={() => setShowLogoutModal(true)} className="hover:text-gray-200 transition">
             Logout
           </button>
         </div>
@@ -99,9 +110,8 @@ export default function DashboardPage() {
           IT Infrastructure Dashboard
         </h1>
         <p className="text-black/90 max-w-2xl mx-auto mb-6 text-base md:text-lg font-light">
-          Access all company infrastructure applications quickly & easily —
-          manage network, wireless, and virtual environments seamlessly in a
-          single portal.
+          Access all company infrastructure applications quickly & easily — manage network, wireless,
+          and virtual environments seamlessly in a single portal.
         </p>
       </section>
 
@@ -135,35 +145,16 @@ export default function DashboardPage() {
         ))}
       </section>
 
-      {/* Footer */}
-      <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
-        <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
-        <p>seatrium.com</p>
-      </footer>
-
-      {/* Logout Confirmation Modal */}
-
+       {/* Logout Modal */}
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-10 w-96 text-center shadow-xl">
-            {/* Warning Icon */}
             <div className="flex justify-center mb-4">
               <AlertTriangle className="w-16 h-16 text-yellow-500" />
             </div>
-
-            {/* Title */}
-            <h2 className="text-2xl font-semibold mb-2 text-gray-800">
-              Logout Confirmation
-            </h2>
-
-            {/* Description */}
-            <p className="text-gray-600 mb-6 text-base">
-              Are you sure you want to logout from your account?
-            </p>
-
-            {/* Buttons */}
+            <h2 className="text-2xl font-semibold mb-2 text-gray-800">Logout Confirmation</h2>
+            <p className="text-gray-600 mb-6 text-base">Are you sure you want to logout from your account?</p>
             <div className="flex justify-between gap-6">
-              {/* Cancel Button */}
               <button
                 onClick={() => setShowLogoutModal(false)}
                 className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-base"
@@ -171,8 +162,6 @@ export default function DashboardPage() {
                 <X className="w-5 h-5" />
                 Cancel
               </button>
-
-              {/* Logout Button */}
               <button
                 onClick={handleLogout}
                 className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-base"
@@ -184,6 +173,12 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
+        <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
+        <p>seatrium.com</p>
+      </footer>
     </div>
   );
 }
