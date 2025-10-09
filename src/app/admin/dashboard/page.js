@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
+import * as LucideIcons from "lucide-react";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,20 +23,19 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [user, setUser] = useState(null);
-  const [showLoginSuccess, setShowLoginSuccess] = useState(false); // ✅ notifikasi login sukses
+  const [showLoginSuccess, setShowLoginSuccess] = useState(false);
+  const [appsList, setAppsList] = useState([]); // ✅ Ambil dari API
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
 
-      // ✅ Munculkan alert login sukses hanya saat pertama kali masuk
       const hasShown = sessionStorage.getItem("loginSuccessShown");
       if (!hasShown) {
         setShowLoginSuccess(true);
         sessionStorage.setItem("loginSuccessShown", "true");
 
-        // ⏱️ Hilangkan otomatis dalam 3 detik
         setTimeout(() => {
           setShowLoginSuccess(false);
         }, 3000);
@@ -43,28 +43,25 @@ export default function DashboardPage() {
     }
   }, []);
 
-  const apps = [
-    {
-      title: "IPAM",
-      fullName: "IP Address Management",
-      icon: Globe,
-      url: "http://10.5.252.156",
-    },
-    {
-      title: "WLC Controller",
-      fullName: "Wireless LAN Controller",
-      icon: Wifi,
-      url: "https://10.5.252.64:8443",
-    },
-    {
-      title: "VMware",
-      fullName: "VMware vSphere",
-      icon: Monitor,
-      url: "https://10.5.252.101",
-    },
-  ];
+  // ✅ Fetch aplikasi dari API yang sama dengan superadmin
+  useEffect(() => {
+    fetch("http://localhost:4000/applications")
+      .then((res) => res.json())
+      .then(setAppsList)
+      .catch(console.error);
+  }, []);
 
-  const filteredApps = apps.filter((app) =>
+  // ✅ Fungsi untuk resolve icon dari Lucide atau fallback ke Globe
+  const resolveIcon = (iconName) => {
+    if (!iconName) return LucideIcons.Globe;
+    const formattedName = iconName
+      .replace(/\s+/g, "")
+      .replace(/-/g, "")
+      .replace(/\./g, "");
+    return LucideIcons[formattedName] || LucideIcons.Globe;
+  };
+
+  const filteredApps = appsList.filter((app) =>
     app.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -89,17 +86,17 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* ✅ Alert Login Sukses */}
+      {/* Alert Login Sukses */}
       {showLoginSuccess && (
         <div className="fixed top-4 right-4 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in z-50">
           <CheckCircle className="w-5 h-5" />
-          <span className="text-sm font-medium">Login Berhasil!</span>
+          <span className="text-sm font-medium">Login SLuccessfully!</span>
         </div>
       )}
 
       {/* HEADER */}
-      <header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
-        <div className="flex items-center gap-4">
+      <header className="flex flex-col sm:flex-row items-center justify-between px-4 py-4 border-b border-white/50 text-white gap-4 sm:gap-0">
+        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
           <Link
             href="/"
             className="flex items-center gap-2 text-sm hover:text-gray-200 transition"
@@ -113,16 +110,14 @@ export default function DashboardPage() {
             />
           </Link>
 
-          {/* 🟦 Sambutan User */}
           {user && (
-            <div className="text-sm md:text-base font-grey-700 text-white  px-4 py-2 rounded-full shadow-md">
-              Selamat Datang, {user.nama} {user.role === "admin" && "(Admin)"}{" "}
-              👋
+            <div className="text-sm md:text-base font-grey-700 text-white px-4 py-2 rounded-full shadow-md truncate max-w-[150px] sm:max-w-xs">
+              Welcome, {user.nama}  👋
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-black font-medium">
+        <div className="flex items-center gap-4 text-sm text-black font-medium w-full sm:w-auto justify-between sm:justify-start">
           <Link
             href="/admin/dashboard"
             className="hover:text-gray-200 transition"
@@ -157,55 +152,59 @@ export default function DashboardPage() {
       </section>
 
       {/* Search Bar */}
-      <div className="max-w-lg mx-auto mb-10 px-8 text-black">
+      <div className="max-w-lg mx-auto mb-10 px-4 sm:px-8">
         <input
           type="text"
           placeholder="Search applications..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full mb-4 px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 backdrop-blur-sm text-sm md:text-base"
+          className="w-full px-4 sm:px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 text-sm sm:text-base"
         />
       </div>
 
       {/* Menu Section */}
-      <section className="max-w-6xl mx-auto px-4 pb-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredApps.map((app, index) => (
-          <div
-            key={index}
-            className="cursor-pointer bg-blue-600 text-white p-8 rounded-3xl shadow-lg hover:bg-white hover:text-blue-600 transition transform hover:-translate-y-2 min-h-[250px] flex flex-col justify-center items-center text-center"
-            onClick={() => (window.location.href = app.url)}
-          >
-            <div className="flex justify-center mb-4">
-              <app.icon className="w-16 h-16 transition-colors duration-300" />
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
+        {filteredApps.map((app, index) => {
+          const Icon = resolveIcon(app.icon);
+
+          return (
+            <div
+              key={index}
+              className="cursor-pointer bg-blue-600 text-white p-6 sm:p-8 rounded-2xl shadow-lg
+                 transform transition-all duration-300 hover:bg-white hover:text-blue-600
+                 hover:-translate-y-2 h-[220px] sm:h-[250px] flex flex-col justify-center items-center text-center"
+              onClick={() => (window.location.href = app.url)}
+            >
+              <div className="flex justify-center mb-4">
+                <Icon className="w-16 h-16 sm:w-20 sm:h-20 transition-colors duration-300" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate max-w-[180px] sm:max-w-[200px]">
+                {app.title}
+              </h3>
+              <div className="text-xs sm:text-sm md:text-base truncate max-w-[180px] sm:max-w-[200px]">
+                {app.fullName}
+              </div>
             </div>
-            <h3 className="text-xl font-semibold mb-2">{app.title}</h3>
-            <div className="text-sm md:text-base text-white/90 hover:text-blue-600 transition-colors">
-              {app.fullName}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       {/* Logout Modal */}
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 sm:p-10 w-full sm:max-w-md shadow-2xl animate-fade-in relative text-center">
-            {/* Icon */}
             <div className="flex justify-center mb-4">
               <AlertTriangle className="w-16 h-16 text-yellow-500" />
             </div>
 
-            {/* Title */}
             <h2 className="text-2xl font-medium mb-2 text-gray-800">
               Logout Confirmation
             </h2>
 
-            {/* Description */}
             <p className="text-gray-700 mb-6 text-base">
               Are you sure you want to logout from your account?
             </p>
 
-            {/* Buttons */}
             <div className="flex flex-col sm:flex-row justify-between gap-4">
               <button
                 onClick={() => setShowLogoutModal(false)}
@@ -227,7 +226,7 @@ export default function DashboardPage() {
       )}
 
       {/* Footer */}
-      <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
+      <footer className="mt-auto py-4 text-center text-white text-xs sm:text-sm space-y-1 border-t border-white/30 px-4 sm:px-6">
         <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
         <p>seatrium.com</p>
       </footer>

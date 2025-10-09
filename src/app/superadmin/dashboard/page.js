@@ -34,6 +34,7 @@ export default function DashboardPage() {
     fullName: "",
     url: "",
     icon: "",
+    iconFile: null, // untuk custom upload
   });
   const [appsList, setAppsList] = useState([]);
 
@@ -44,6 +45,7 @@ export default function DashboardPage() {
     fullName: "",
     url: "",
     icon: "",
+    iconFile: null, // juga untuk edit
   });
 
   useEffect(() => {
@@ -108,7 +110,7 @@ export default function DashboardPage() {
       {showLoginSuccess && (
         <div className="fixed top-4 right-4 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in z-50">
           <CheckCircle className="w-5 h-5" />
-          <span className="text-sm font-medium">Login Berhasil!</span>
+          <span className="text-sm font-medium">Login successfully!</span>
         </div>
       )}
 
@@ -309,10 +311,10 @@ export default function DashboardPage() {
         })}
       </section>
 
-      {/* Add Application Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl w-full sm:max-w-xl p-6 sm:p-10 shadow-2xl animate-fade-in relative">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl w-full max-w-xl p-8 md:p-10 shadow-2xl animate-fade-in relative">
+            {/* Tombol close pojok kanan */}
             <button
               onClick={() => setShowAddModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
@@ -320,145 +322,158 @@ export default function DashboardPage() {
               <X className="w-6 h-6" />
             </button>
 
-            <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">
+            {/* Judul Modal */}
+            <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">
               Add New Application
             </h2>
 
+            {/* Form */}
             <div className="space-y-5">
+              {/* Title */}
               <div>
-                <label className="block text-gray-700 font-medium mb-1 text-sm">
-                  Title <span className="text-red-500">*</span>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Title
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter a short application name"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                  placeholder="e.g. IPAM"
+                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   value={newApp.title}
-                  required
                   onChange={(e) =>
                     setNewApp({ ...newApp, title: e.target.value })
                   }
                 />
               </div>
+
+              {/* Full Name */}
               <div>
-                <label className="block text-gray-700 font-medium mb-1 text-sm">
-                  Full Name <span className="text-red-500">*</span>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Full Name
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter the full application name"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                  placeholder="e.g. IP Address Management"
+                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   value={newApp.fullName}
-                  required
                   onChange={(e) =>
                     setNewApp({ ...newApp, fullName: e.target.value })
                   }
                 />
               </div>
+
+              {/* URL */}
               <div>
-                <label className="block text-gray-700 font-medium mb-1 text-sm">
-                  URL <span className="text-red-500">*</span>
+                <label className="block text-gray-700 font-medium mb-1">
+                  URL
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter the application URL"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                  placeholder="https://example.com"
+                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   value={newApp.url}
-                  required
                   onChange={(e) =>
                     setNewApp({ ...newApp, url: e.target.value })
                   }
                 />
               </div>
+
+              {/* Icon Input */}
               <div>
-                <label className="block text-gray-700 font-medium mb-1 text-sm">
-                  Icon <span className="text-red-500">*</span>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Icon (Lucide name or upload image)
                 </label>
+
                 <input
                   type="text"
-                  placeholder="Enter the icon name"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                  placeholder="e.g. Globe, Wifi, Monitor..."
+                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none mb-3"
                   value={newApp.icon}
-                  required
                   onChange={(e) =>
                     setNewApp({ ...newApp, icon: e.target.value })
                   }
                 />
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
+                  onChange={(e) =>
+                    setNewApp({ ...newApp, iconFile: e.target.files[0] })
+                  }
+                />
+
                 <p className="text-xs text-gray-500 mt-1">
-                  Input the icon name (e.g., Globe, Wifi, Monitor)
+                  Gunakan nama ikon dari lucide-react (contoh:{" "}
+                  <code>Globe</code>) atau upload gambar ikon sendiri.
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8">
+            {/* Tombol Aksi */}
+            <div className="flex justify-end gap-4 mt-8">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-5 py-3 rounded-lg bg-gray-300 text-gray-800 hover:bg-gray-400 transition font-medium w-full sm:w-auto"
+                className="px-5 py-3 rounded-lg bg-gray-300 text-gray-800 hover:bg-gray-400 transition font-medium"
               >
                 Cancel
               </button>
+
               <button
                 onClick={async () => {
-                  // simple check for required fields
-                  if (
-                    !newApp.title ||
-                    !newApp.fullName ||
-                    !newApp.url ||
-                    !newApp.icon
-                  ) {
-                    Swal.fire({
-                      title: "Incomplete Data",
-                      text: "Please fill in all required fields!",
-                      icon: "warning",
-                      confirmButtonColor: "#1e40af",
-                    });
-                    return;
-                  }
-
                   try {
+                    const formData = new FormData();
+                    formData.append("title", newApp.title);
+                    formData.append("fullName", newApp.fullName);
+                    formData.append("url", newApp.url);
+                    formData.append("icon", newApp.icon);
+                    if (newApp.iconFile) {
+                      formData.append("iconFile", newApp.iconFile);
+                    }
+
                     const res = await fetch(
                       "http://localhost:4000/applications",
                       {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(newApp),
+                        body: formData, 
                       }
                     );
 
                     if (res.ok) {
                       setShowAddModal(false);
-                      setNewApp({ title: "", fullName: "", url: "", icon: "" });
+                      setNewApp({
+                        title: "",
+                        fullName: "",
+                        url: "",
+                        icon: "",
+                        iconFile: null,
+                      });
+
                       const updated = await fetch(
                         "http://localhost:4000/applications"
                       ).then((r) => r.json());
                       setAppsList(updated);
 
-                      // SweetAlert sukses ala login
                       await Swal.fire({
-                        title: "Success!",
-                        text: "Application has been added successfully.",
+                        title: "Application Added!",
+                        text: "New application has been successfully added.",
                         icon: "success",
                         confirmButtonColor: "#1e40af",
                       });
                     } else {
+                      const errorText = await res.text();
+                      console.error("Gagal menyimpan aplikasi:", errorText);
                       Swal.fire({
                         title: "Error",
-                        text: "Failed to add application. Please try again.",
+                        text: "Failed to save application.",
                         icon: "error",
                         confirmButtonColor: "#1e40af",
                       });
                     }
-                  } catch (error) {
-                    console.error(error);
-                    Swal.fire({
-                      title: "Error",
-                      text: "Something went wrong. Please try again.",
-                      icon: "error",
-                      confirmButtonColor: "#1e40af",
-                    });
+                  } catch (err) {
+                    console.error("Error upload aplikasi:", err);
                   }
                 }}
-                className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-semibold w-full sm:w-auto"
+                className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-semibold"
               >
                 Save Application
               </button>
