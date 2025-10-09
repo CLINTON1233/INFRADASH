@@ -199,12 +199,12 @@ export default function LoginPage() {
           </button>
 
           {/* Forgot Password */}
-          <p className="text-sm text-gray-700 text-center mt-1">
+          {/* <p className="text-sm text-gray-700 text-center mt-1">
             Forgot your password?{" "}
             <Link href="/forgot-password" className="underline text-blue-600">
               Reset here
             </Link>
-          </p>
+          </p> */}
 
           {/* Sign up */}
           <p className="text-sm text-gray-700 text-center mt-1">
@@ -216,8 +216,24 @@ export default function LoginPage() {
         </form>
       </div>
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
-        <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
-        <p>seatrium.com</p>
+        <p>
+          IT Infrastructure Dashboard Created by{" "}
+          <a
+            href="https://www.linkedin.com/in/clinton-alfaro/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-white hover:underline"
+          >
+            @Clinton Alfaro
+          </a>
+        </p>
+        <Link
+          href="https://seatrium.com"
+          target="_blank"
+          className="underline hover:opacity-100"
+        >
+          seatrium.com
+        </Link>
       </footer>
     </div>
   );

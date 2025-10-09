@@ -7,7 +7,6 @@ import {
   CheckCircle,
   AlertTriangle,
   X,
-  MoreVertical,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -26,27 +25,7 @@ export default function DashboardPage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [user, setUser] = useState(null);
   const [showLoginSuccess, setShowLoginSuccess] = useState(false);
-  const [openMenuIndex, setOpenMenuIndex] = useState(null);
-
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newApp, setNewApp] = useState({
-    title: "",
-    fullName: "",
-    url: "",
-    icon: "",
-    iconFile: null, // untuk custom upload
-  });
   const [appsList, setAppsList] = useState([]);
-
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editApp, setEditApp] = useState({
-    id: null,
-    title: "",
-    fullName: "",
-    url: "",
-    icon: "",
-    iconFile: null, // juga untuk edit
-  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -124,17 +103,17 @@ export default function DashboardPage() {
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={130}
-              height={130}
+              width={150}
+              height={150}
               className="object-contain"
             />
           </Link>
 
-          {user && (
+          {/* {user && (
             <div className="text-sm md:text-base font-grey-700 text-white px-4 py-2 rounded-full shadow-md truncate max-w-[150px] sm:max-w-xs">
               Welcome, {user.nama} {user.role === "admin" && "(Admin)"} 👋
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
@@ -144,6 +123,12 @@ export default function DashboardPage() {
               className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
             >
               Dashboard
+            </Link>
+            <Link
+              href="/superadmin/applications"
+              className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
+            >
+              Applications
             </Link>
             <Link
               href="/superadmin/profile"
@@ -163,17 +148,24 @@ export default function DashboardPage() {
 
       {/* Hero Section */}
       <section className="max-w-5xl mx-auto text-center py-6 px-4 sm:py-10 sm:px-6">
-        <h1 className="text-3xl sm:text-4xl md:text-4xl font-medium text-black mb-4 drop-shadow-md">
-          IT Infrastructure Dashboard
-        </h1>
-        <p className="text-black/90 max-w-2xl mx-auto mb-6 text-sm sm:text-base md:text-lg font-light">
-          Access all company infrastructure applications quickly & easily —
-          manage network, wireless, and virtual environments seamlessly in a
-          single portal.
-        </p>
+        <div className="text-center mt-6">
+          {/* Logo Row */}
+          <div className="flex items-center justify-center gap-3">
+            <Globe className="w-12 h-12 text-blue-500" />
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight">
+              <span className="text-gray-900">Infra</span>{" "}
+              <span className="text-sky-500">Dash</span>
+            </h1>
+          </div>
+
+          {/* Subtitle */}
+          <p className="text-sm sm:text-base text-gray-500 tracking-widest mt-1">
+            IT INFRASTRUCTURE DASHBOARD
+          </p>
+        </div>
       </section>
 
-      {/* Search Bar + Add Button */}
+      {/* Search Bar */}
       <div className="max-w-4xl mx-auto mb-10 px-4 sm:px-6 w-full flex flex-col sm:flex-row items-center gap-4 justify-between">
         {/* Search Input */}
         <input
@@ -183,16 +175,6 @@ export default function DashboardPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex-1 w-full px-4 sm:px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 text-sm sm:text-base"
         />
-
-        {/* Add Application Button */}
-        {user?.role === "superadmin" && (
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="bg-gray-600 px-6 py-3 rounded-full text-white hover:bg-gray-700 transition text-sm sm:text-base"
-          >
-            + Add Application
-          </button>
-        )}
       </div>
 
       {/* Menu Section */}
@@ -217,410 +199,17 @@ export default function DashboardPage() {
                 {app.fullName}
               </div>
 
-              {/* Menu button (three dots) */}
-              <div className="absolute bottom-4 right-4 z-10">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // stop bubbling to card
-                    setOpenMenuIndex(openMenuIndex === index ? null : index);
-                  }}
-                  className="p-1 rounded-full hover:bg-white/20 transition"
-                >
-                  <MoreVertical className="w-5 h-5" />
-                </button>
-
-                {openMenuIndex === index && (
-                  <div className="absolute bottom-10 right-0 bg-white text-gray-800 rounded-lg shadow-lg w-40 z-50">
-                    {/* Edit Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditApp(app);
-                        setShowEditModal(true);
-                        setOpenMenuIndex(null);
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-left"
-                    >
-                      <LucideIcons.Edit2 className="w-4 h-4" />
-                      Edit
-                    </button>
-
-                    {/* Delete Button */}
-                    <button
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        const result = await Swal.fire({
-                          title: `Delete ${app.title}?`,
-                          text: "This action cannot be undone!",
-                          icon: "warning",
-                          showCancelButton: true,
-                          confirmButtonColor: "#4CAF50",
-                          cancelButtonColor: "#d33",
-                          confirmButtonText: "Yes, delete it!",
-                          cancelButtonText: "Cancel",
-                        });
-
-                        if (result.isConfirmed) {
-                          try {
-                            await fetch(
-                              `http://localhost:4000/applications/${app.id}`,
-                              { method: "DELETE" }
-                            );
-                            const updated = await fetch(
-                              "http://localhost:4000/applications"
-                            ).then((r) => r.json());
-                            setAppsList(updated);
-
-                            Swal.fire({
-                              title: "Deleted!",
-                              text: `${app.title} has been deleted.`,
-                              icon: "success",
-                              confirmButtonColor: "#1e40af",
-                            });
-                          } catch (error) {
-                            Swal.fire({
-                              title: "Error",
-                              text: "Failed to delete application.",
-                              icon: "error",
-                              confirmButtonColor: "#1e40af",
-                            });
-                          }
-                        }
-                        setOpenMenuIndex(null);
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-left text-red-600"
-                    >
-                      <LucideIcons.Trash2 className="w-4 h-4" />
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-
               {/* Click area for card navigation */}
               <div
-                className="absolute inset-0 z-0"
+                className="absolute inset-0 z-0 cursor-pointer"
                 onClick={() => {
-                  if (openMenuIndex !== index) {
-                    window.location.href = app.url;
-                  }
+                  window.location.href = app.url;
                 }}
               />
             </div>
           );
         })}
       </section>
-
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-xl p-8 md:p-10 shadow-2xl animate-fade-in relative">
-            {/* Tombol close pojok kanan */}
-            <button
-              onClick={() => setShowAddModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            {/* Judul Modal */}
-            <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">
-              Add New Application
-            </h2>
-
-            {/* Form */}
-            <div className="space-y-5">
-              {/* Title */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. IPAM"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  value={newApp.title}
-                  onChange={(e) =>
-                    setNewApp({ ...newApp, title: e.target.value })
-                  }
-                />
-              </div>
-
-              {/* Full Name */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. IP Address Management"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  value={newApp.fullName}
-                  onChange={(e) =>
-                    setNewApp({ ...newApp, fullName: e.target.value })
-                  }
-                />
-              </div>
-
-              {/* URL */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  URL
-                </label>
-                <input
-                  type="text"
-                  placeholder="https://example.com"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  value={newApp.url}
-                  onChange={(e) =>
-                    setNewApp({ ...newApp, url: e.target.value })
-                  }
-                />
-              </div>
-
-              {/* Icon Input */}
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  Icon (Lucide name or upload image)
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="e.g. Globe, Wifi, Monitor..."
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none mb-3"
-                  value={newApp.icon}
-                  onChange={(e) =>
-                    setNewApp({ ...newApp, icon: e.target.value })
-                  }
-                />
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
-                  onChange={(e) =>
-                    setNewApp({ ...newApp, iconFile: e.target.files[0] })
-                  }
-                />
-
-                <p className="text-xs text-gray-500 mt-1">
-                  Gunakan nama ikon dari lucide-react (contoh:{" "}
-                  <code>Globe</code>) atau upload gambar ikon sendiri.
-                </p>
-              </div>
-            </div>
-
-            {/* Tombol Aksi */}
-            <div className="flex justify-end gap-4 mt-8">
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="px-5 py-3 rounded-lg bg-gray-300 text-gray-800 hover:bg-gray-400 transition font-medium"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={async () => {
-                  try {
-                    const formData = new FormData();
-                    formData.append("title", newApp.title);
-                    formData.append("fullName", newApp.fullName);
-                    formData.append("url", newApp.url);
-                    formData.append("icon", newApp.icon);
-                    if (newApp.iconFile) {
-                      formData.append("iconFile", newApp.iconFile);
-                    }
-
-                    const res = await fetch(
-                      "http://localhost:4000/applications",
-                      {
-                        method: "POST",
-                        body: formData, 
-                      }
-                    );
-
-                    if (res.ok) {
-                      setShowAddModal(false);
-                      setNewApp({
-                        title: "",
-                        fullName: "",
-                        url: "",
-                        icon: "",
-                        iconFile: null,
-                      });
-
-                      const updated = await fetch(
-                        "http://localhost:4000/applications"
-                      ).then((r) => r.json());
-                      setAppsList(updated);
-
-                      await Swal.fire({
-                        title: "Application Added!",
-                        text: "New application has been successfully added.",
-                        icon: "success",
-                        confirmButtonColor: "#1e40af",
-                      });
-                    } else {
-                      const errorText = await res.text();
-                      console.error("Gagal menyimpan aplikasi:", errorText);
-                      Swal.fire({
-                        title: "Error",
-                        text: "Failed to save application.",
-                        icon: "error",
-                        confirmButtonColor: "#1e40af",
-                      });
-                    }
-                  } catch (err) {
-                    console.error("Error upload aplikasi:", err);
-                  }
-                }}
-                className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-semibold"
-              >
-                Save Application
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showEditModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl w-full sm:max-w-xl p-6 sm:p-10 shadow-2xl animate-fade-in relative">
-            <button
-              onClick={() => setShowEditModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">
-              Edit Application
-            </h2>
-
-            <div className="space-y-5">
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. IPAM"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  value={editApp.title}
-                  onChange={(e) =>
-                    setEditApp({ ...editApp, title: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. IP Address Management"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  value={editApp.fullName}
-                  onChange={(e) =>
-                    setEditApp({ ...editApp, fullName: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  URL
-                </label>
-                <input
-                  type="text"
-                  placeholder="https://example.com"
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  value={editApp.url}
-                  onChange={(e) =>
-                    setEditApp({ ...editApp, url: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-medium mb-1">
-                  Icon
-                </label>
-                <input
-                  type="text"
-                  placeholder="Globe, Wifi, Monitor..."
-                  className="w-full px-4 py-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  value={editApp.icon}
-                  onChange={(e) =>
-                    setEditApp({ ...editApp, icon: e.target.value })
-                  }
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Gunakan nama ikon dari lucide-react (contoh: Globe, Wifi,
-                  Monitor)
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8">
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="px-5 py-3 rounded-lg bg-gray-300 text-gray-800 hover:bg-gray-400 transition font-medium w-full sm:w-auto"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    const res = await fetch(
-                      `http://localhost:4000/applications/${editApp.id}`,
-                      {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          title: editApp.title,
-                          fullName: editApp.fullName,
-                          url: editApp.url,
-                          icon: editApp.icon,
-                        }),
-                      }
-                    );
-
-                    if (res.ok) {
-                      const updated = await fetch(
-                        "http://localhost:4000/applications"
-                      ).then((r) => r.json());
-                      setAppsList(updated);
-                      setShowEditModal(false);
-
-                      Swal.fire({
-                        title: "Success!",
-                        text: `${editApp.title} has been updated.`,
-                        icon: "success",
-                        confirmButtonColor: "#1e40af",
-                      });
-                    } else {
-                      Swal.fire({
-                        title: "Error",
-                        text: "Failed to update application.",
-                        icon: "error",
-                        confirmButtonColor: "#1e40af",
-                      });
-                    }
-                  } catch (error) {
-                    Swal.fire({
-                      title: "Error",
-                      text: "Something went wrong.",
-                      icon: "error",
-                      confirmButtonColor: "#1e40af",
-                    });
-                  }
-                }}
-                className="px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-semibold w-full sm:w-auto"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Logout Modal */}
       {showLogoutModal && (

@@ -37,7 +37,7 @@ export default function ProfilePage() {
     setFormData({ ...formData, [name]: value });
   };
 
-    const handleLogout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("user");
     sessionStorage.removeItem("loginSuccessShown");
     window.location.href = "/login";
@@ -133,7 +133,7 @@ export default function ProfilePage() {
               Profile
             </Link>
             <button
-              onClick={() => setShowLogoutModal(true)} 
+              onClick={() => setShowLogoutModal(true)}
               className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
             >
               Logout
@@ -147,7 +147,7 @@ export default function ProfilePage() {
         {/* Icon People */}
         <div className="flex flex-col items-center mb-6 text-white">
           <User size={60} className="mb-2" />
-          <h1 className="text-2xl font-bold">Profile Superadmin</h1>
+          <h1 className="text-2xl font-bold">Profile Admin</h1>
           <p className="text-sm opacity-90">Informasi Akun</p>
         </div>
 

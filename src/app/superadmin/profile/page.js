@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
-import { User } from "lucide-react"; // icon people
+import { User, AlertTriangle, X, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
 
 const poppins = Poppins({
@@ -16,7 +16,7 @@ export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
-
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -35,6 +35,12 @@ export default function ProfilePage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("loginSuccessShown");
+    window.location.href = "/login";
   };
 
   const handleSave = async () => {
@@ -105,8 +111,8 @@ export default function ProfilePage() {
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={130}
-              height={130}
+              width={150}
+              height={150}
               className="object-contain"
             />
           </Link>
@@ -119,6 +125,12 @@ export default function ProfilePage() {
               className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
             >
               Dashboard
+            </Link>
+            <Link
+              href="/superadmin/applications"
+              className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
+            >
+              Applications
             </Link>
             <Link
               href="/superadmin/profile"
@@ -141,7 +153,7 @@ export default function ProfilePage() {
         {/* Icon People */}
         <div className="flex flex-col items-center mb-6 text-white">
           <User size={60} className="mb-2" />
-          <h1 className="text-2xl font-bold">Profile Superadmin</h1>
+          <h1 className="text-2xl font-bold">Profile Admin</h1>
           <p className="text-sm opacity-90">Informasi Akun</p>
         </div>
 
@@ -258,6 +270,42 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 sm:p-10 w-full sm:max-w-md shadow-2xl animate-fade-in relative text-center">
+            <div className="flex justify-center mb-4">
+              <AlertTriangle className="w-16 h-16 text-yellow-500" />
+            </div>
+
+            <h2 className="text-2xl font-medium mb-2 text-gray-800">
+              Logout Confirmation
+            </h2>
+
+            <p className="text-gray-700 mb-6 text-base">
+              Are you sure you want to logout from your account?
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-between gap-4">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition text-base font-grey-500"
+              >
+                <X className="w-5 h-5" />
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-base font-grey-500"
+              >
+                <CheckCircle className="w-5 h-5" />
+                Yes, Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
         <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>

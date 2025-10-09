@@ -280,8 +280,25 @@ export default function RegisterPage() {
         </div>
       </div>
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
-        <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
-        <p>seatrium.com</p>
+        <p>
+          IT Infrastructure Dashboard Created by{" "}
+          <a
+            href="https://www.linkedin.com/in/clinton-alfaro/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-white hover:underline"
+          >
+            @Clinton Alfaro
+          </a>
+        </p>
+
+        <Link
+          href="https://seatrium.com"
+          target="_blank"
+          className="underline hover:opacity-100"
+        >
+          seatrium.com
+        </Link>
       </footer>
     </div>
   );
