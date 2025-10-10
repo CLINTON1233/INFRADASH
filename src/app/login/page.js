@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Poppins } from "next/font/google";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { useAuth } from "../context/AuthContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -13,6 +14,7 @@ const poppins = Poppins({
 });
 
 export default function LoginPage() {
+  const { login } = useAuth();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,22 +36,18 @@ export default function LoginPage() {
       console.log(data);
 
       if (data.status === "success") {
-        // ambil user dari backend
         const user = data.user;
 
-        // simpan semua field
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: user.id,
-            nama: user.nama,
-            email: user.email,
-            badge: user.badge || "",
-            telp: user.telp || "",
-            departemen: user.departemen || "",
-            role: user.role,
-          })
-        );
+        // Simpan user dan login
+        login({
+          id: user.id,
+          nama: user.nama,
+          email: user.email,
+          badge: user.badge || "",
+          telp: user.telp || "",
+          departemen: user.departemen || "",
+          role: user.role,
+        });
 
         await Swal.fire({
           title: "Login Berhasil",

@@ -14,13 +14,16 @@ import Link from "next/link";
 import { Poppins } from "next/font/google";
 import * as LucideIcons from "lucide-react";
 import Swal from "sweetalert2";
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { useAuth } from '../../context/AuthContext';
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export default function DashboardPage() {
+export default function SuperAdminDashboardPage() {
+  const { logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [user, setUser] = useState(null);
@@ -64,13 +67,12 @@ export default function DashboardPage() {
     app.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("loginSuccessShown");
-    window.location.href = "/login";
-  };
+const handleLogout = () => {
+  logout(); // Ini akan handle semua cleanup dan redirect
+};
 
   return (
+    <ProtectedRoute requiredRole="superadmin">
     <div
       className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}
     >
@@ -257,5 +259,6 @@ export default function DashboardPage() {
         <p>seatrium.com</p>
       </footer>
     </div>
+    </ProtectedRoute>
   );
 }

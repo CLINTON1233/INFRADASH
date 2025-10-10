@@ -26,6 +26,8 @@ import Link from "next/link";
 import { Poppins } from "next/font/google";
 import * as LucideIcons from "lucide-react";
 import Swal from "sweetalert2";
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { useAuth } from '../../context/AuthContext';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -33,6 +35,7 @@ const poppins = Poppins({
 });
 
 export default function ApplicationsPage() {
+  const { logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [user, setUser] = useState(null);
@@ -272,12 +275,13 @@ export default function ApplicationsPage() {
     );
   };
 
+
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/login";
-  };
+  logout(); // Ini akan handle semua cleanup dan redirect
+};
 
   return (
+       <ProtectedRoute requiredRole="admin">
     <div
       className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}
     >
@@ -302,8 +306,8 @@ export default function ApplicationsPage() {
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={100}
-              height={100}
+              width={150}
+              height={150}
               className="object-contain"
             />
           </Link>
@@ -601,32 +605,35 @@ export default function ApplicationsPage() {
         />
       )}
 
-      {/* Logout Modal - Mobile Optimized */}
+     {/* Logout Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-3">
-          <div className="bg-white/90 backdrop-blur-md rounded-xl p-6 w-full max-w-xs shadow-xl animate-fade-in relative text-center">
-            <div className="flex justify-center mb-3">
-              <AlertTriangle className="w-12 h-12 text-yellow-500" />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 sm:p-10 w-full sm:max-w-md shadow-2xl animate-fade-in relative text-center">
+            <div className="flex justify-center mb-4">
+              <AlertTriangle className="w-16 h-16 text-yellow-500" />
             </div>
-            <h2 className="text-lg font-medium mb-2 text-gray-800">
+
+            <h2 className="text-2xl font-medium mb-2 text-gray-800">
               Logout Confirmation
             </h2>
-            <p className="text-gray-700 mb-4 text-sm">
+
+            <p className="text-gray-700 mb-6 text-base">
               Are you sure you want to logout from your account?
             </p>
-            <div className="flex flex-col gap-2">
+
+            <div className="flex flex-col sm:flex-row justify-between gap-4">
               <button
                 onClick={() => setShowLogoutModal(false)}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition text-sm"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition text-base font-grey-500"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
                 Cancel
               </button>
               <button
                 onClick={handleLogout}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-sm"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-base font-grey-500"
               >
-                <CheckCircle className="w-4 h-4" />
+                <CheckCircle className="w-5 h-5" />
                 Yes, Logout
               </button>
             </div>
@@ -634,11 +641,13 @@ export default function ApplicationsPage() {
         </div>
       )}
 
+
       {/* Footer - Mobile Optimized */}
       <footer className="mt-auto py-3 text-center text-white text-xs space-y-1 border-t border-white/30 px-3">
         <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
         <p>seatrium.com</p>
       </footer>
     </div>
+    </ProtectedRoute>
   );
 }

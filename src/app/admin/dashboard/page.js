@@ -13,19 +13,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
 import * as LucideIcons from "lucide-react";
-import Swal from "sweetalert2";
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { useAuth } from '../../context/AuthContext';
+
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export default function DashboardPage() {
+export default function AdminDashboardPage() {
+  const { logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [user, setUser] = useState(null);
   const [showLoginSuccess, setShowLoginSuccess] = useState(false);
-  const [appsList, setAppsList] = useState([]);
+  const [appsList, setAppsList] = useState([]); // ✅ Ambil dari API
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -44,6 +47,7 @@ export default function DashboardPage() {
     }
   }, []);
 
+  // ✅ Fetch aplikasi dari API yang sama dengan superadmin
   useEffect(() => {
     fetch("http://localhost:4000/applications")
       .then((res) => res.json())
@@ -51,6 +55,7 @@ export default function DashboardPage() {
       .catch(console.error);
   }, []);
 
+  // ✅ Fungsi untuk resolve icon dari Lucide atau fallback ke Globe
   const resolveIcon = (iconName) => {
     if (!iconName) return LucideIcons.Globe;
     const formattedName = iconName
@@ -65,12 +70,11 @@ export default function DashboardPage() {
   );
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("loginSuccessShown");
-    window.location.href = "/login";
-  };
+  logout(); // Ini akan handle semua cleanup dan redirect
+};
 
   return (
+       <ProtectedRoute requiredRole="admin">
     <div
       className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}
     >
@@ -87,9 +91,9 @@ export default function DashboardPage() {
 
       {/* Alert Login Sukses */}
       {showLoginSuccess && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in z-50">
+        <div className="fixed top-4 right-4 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in z-50">
           <CheckCircle className="w-5 h-5" />
-          <span className="text-sm font-medium">Login successfully!</span>
+          <span className="text-sm font-medium">Login SLuccessfully!</span>
         </div>
       )}
 
@@ -103,50 +107,48 @@ export default function DashboardPage() {
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={150}
-              height={150}
+              width={130}
+              height={130}
               className="object-contain"
             />
           </Link>
-
-          {/* {user && (
+{/* 
+          {user && (
             <div className="text-sm md:text-base font-grey-700 text-white px-4 py-2 rounded-full shadow-md truncate max-w-[150px] sm:max-w-xs">
-              Welcome, {user.nama} 👋
+              Welcome, {user.nama}  👋
             </div>
           )} */}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
-          <div className="flex items-center gap-4 text-sm text-black font-medium w-full sm:w-auto justify-between sm:justify-start">
-            <Link
-              href="/admin/dashboard"
-              className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/applications"
-              className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-            >
-              Applications
-            </Link>
-            <Link
-              href="/admin/profile"
-              className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-            >
-              Profile
-            </Link>
-            <button
-              onClick={() => setShowLogoutModal(true)}
-              className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-            >
-              Logout
-            </button>
-          </div>
+        <div className="flex items-center gap-4 text-sm text-black font-medium w-full sm:w-auto justify-between sm:justify-start">
+          <Link
+            href="/admin/dashboard"
+            className="hover:text-gray-200 transition"
+          >
+            Dashboard
+          </Link>
+             <Link
+            href="/admin/applications"
+            className="hover:text-gray-200 transition"
+          >
+            Applications
+          </Link>
+          <Link
+            href="/admin/profile"
+            className="hover:text-gray-200 transition"
+          >
+            Profile
+          </Link>
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="hover:text-gray-200 transition"
+          >
+            Logout
+          </button>
         </div>
       </header>
 
-      {/* Hero Section */}
+     {/* Hero Section */}
       <section className="max-w-5xl mx-auto text-center py-6 px-4 sm:py-10 sm:px-6">
         <div className="text-center mt-6">
           {/* Logo Row */}
@@ -164,8 +166,7 @@ export default function DashboardPage() {
           </p>
         </div>
       </section>
-
-      {/* Search Bar */}
+  {/* Search Bar */}
       <div className="max-w-4xl mx-auto mb-10 px-4 sm:px-6 w-full flex flex-col sm:flex-row items-center gap-4 justify-between">
         {/* Search Input */}
         <input
@@ -176,7 +177,6 @@ export default function DashboardPage() {
           className="flex-1 w-full px-4 sm:px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 text-sm sm:text-base"
         />
       </div>
-
       {/* Menu Section */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
         {filteredApps.map((app, index) => {
@@ -185,9 +185,10 @@ export default function DashboardPage() {
           return (
             <div
               key={index}
-              className="relative cursor-pointer bg-blue-600 text-white p-6 sm:p-8 rounded-2xl shadow-lg
+              className="cursor-pointer bg-blue-600 text-white p-6 sm:p-8 rounded-2xl shadow-lg
                  transform transition-all duration-300 hover:bg-white hover:text-blue-600
                  hover:-translate-y-2 h-[220px] sm:h-[250px] flex flex-col justify-center items-center text-center"
+              onClick={() => (window.location.href = app.url)}
             >
               <div className="flex justify-center mb-4">
                 <Icon className="w-16 h-16 sm:w-20 sm:h-20 transition-colors duration-300" />
@@ -198,14 +199,6 @@ export default function DashboardPage() {
               <div className="text-xs sm:text-sm md:text-base truncate max-w-[180px] sm:max-w-[200px]">
                 {app.fullName}
               </div>
-
-              {/* Click area for card navigation */}
-              <div
-                className="absolute inset-0 z-0 cursor-pointer"
-                onClick={() => {
-                  window.location.href = app.url;
-                }}
-              />
             </div>
           );
         })}
@@ -215,22 +208,18 @@ export default function DashboardPage() {
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 sm:p-10 w-full sm:max-w-md shadow-2xl animate-fade-in relative text-center">
-            {/* Icon */}
             <div className="flex justify-center mb-4">
               <AlertTriangle className="w-16 h-16 text-yellow-500" />
             </div>
 
-            {/* Title */}
             <h2 className="text-2xl font-medium mb-2 text-gray-800">
               Logout Confirmation
             </h2>
 
-            {/* Description */}
             <p className="text-gray-700 mb-6 text-base">
               Are you sure you want to logout from your account?
             </p>
 
-            {/* Buttons */}
             <div className="flex flex-col sm:flex-row justify-between gap-4">
               <button
                 onClick={() => setShowLogoutModal(false)}
@@ -257,5 +246,6 @@ export default function DashboardPage() {
         <p>seatrium.com</p>
       </footer>
     </div>
+    </ProtectedRoute>
   );
 }

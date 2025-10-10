@@ -6,6 +6,8 @@ import Image from "next/image";
 import { Poppins } from "next/font/google";
 import { User, AlertTriangle, X, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { useAuth } from '../../context/AuthContext';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -37,11 +39,9 @@ export default function ProfilePage() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("loginSuccessShown");
-    window.location.href = "/login";
-  };
+const handleLogout = () => {
+  logout(); // Ini akan handle semua cleanup dan redirect
+};
 
   const handleSave = async () => {
     try {
@@ -88,6 +88,7 @@ export default function ProfilePage() {
   };
 
   return (
+     <ProtectedRoute requiredRole="superadmin">
     <div className={`relative min-h-screen flex flex-col ${poppins.className}`}>
       {/* Background */}
       <div className="absolute inset-0 -z-10">
@@ -153,7 +154,7 @@ export default function ProfilePage() {
         {/* Icon People */}
         <div className="flex flex-col items-center mb-6 text-white">
           <User size={60} className="mb-2" />
-          <h1 className="text-2xl font-bold">Profile Admin</h1>
+          <h1 className="text-2xl font-bold">Profile Superadmin</h1>
           <p className="text-sm opacity-90">Informasi Akun</p>
         </div>
 
@@ -312,5 +313,6 @@ export default function ProfilePage() {
         <p>seatrium.com</p>
       </footer>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -6,6 +6,8 @@ import Image from "next/image";
 import { Poppins } from "next/font/google";
 import { User, AlertTriangle, X, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { useAuth } from '../../context/AuthContext';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -13,6 +15,7 @@ const poppins = Poppins({
 });
 
 export default function ProfilePage() {
+  const { logout } = useAuth();
   const [userData, setUserData] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
@@ -37,12 +40,9 @@ export default function ProfilePage() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("loginSuccessShown");
-    window.location.href = "/login";
-  };
-
+const handleLogout = () => {
+  logout(); // Ini akan handle semua cleanup dan redirect
+};
   const handleSave = async () => {
     try {
       const response = await fetch(
@@ -88,6 +88,7 @@ export default function ProfilePage() {
   };
 
   return (
+       <ProtectedRoute requiredRole="admin">
     <div className={`relative min-h-screen flex flex-col ${poppins.className}`}>
       {/* Background */}
       <div className="absolute inset-0 -z-10">
@@ -111,8 +112,8 @@ export default function ProfilePage() {
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={130}
-              height={130}
+              width={150}
+              height={150}
               className="object-contain"
             />
           </Link>
@@ -125,6 +126,12 @@ export default function ProfilePage() {
               className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
             >
               Dashboard
+            </Link>
+              <Link
+              href="/admin/applications"
+              className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
+            >
+              Applications
             </Link>
             <Link
               href="/admin/profile"
@@ -306,5 +313,6 @@ export default function ProfilePage() {
         <p>seatrium.com</p>
       </footer>
     </div>
+    </ProtectedRoute>
   );
 }
