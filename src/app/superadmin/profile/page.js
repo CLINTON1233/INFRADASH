@@ -15,6 +15,7 @@ const poppins = Poppins({
 });
 
 export default function ProfilePage() {
+    const { logout } = useAuth();
   const [userData, setUserData] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});

@@ -22,7 +22,7 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export default function SuperAdminDashboardPage() {
+export default function AdminDashboardPage() {
   const { logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -63,26 +63,56 @@ export default function SuperAdminDashboardPage() {
       })
       .catch(console.error);
   };
+const groupAppsByCategory = (apps) => {
+  const grouped = {};
+  apps.forEach((app) => {
+    // SEKARANG: app.category adalah object, jadi ambil app.category.name
+    const categoryName = app.category?.name || "Uncategorized";
+    if (!grouped[categoryName]) {
+      grouped[categoryName] = [];
+    }
+    grouped[categoryName].push(app);
+  });
+  return grouped;
+};
+  const AppIcon = ({
+    iconName,
+     className = "w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 transition-colors duration-300",
+  }) => {
+    if (!iconName) {
+      const GlobeIcon = LucideIcons.Globe;
+      return <GlobeIcon className={className} />;
+    }
 
-  const groupAppsByCategory = (apps) => {
-    const grouped = {};
-    apps.forEach((app) => {
-      const category = app.category || "Uncategorized";
-      if (!grouped[category]) {
-        grouped[category] = [];
-      }
-      grouped[category].push(app);
-    });
-    return grouped;
-  };
+    // Cek jika ini uploaded file
+    if (
+      iconName.startsWith("icon-") &&
+      /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
+    ) {
+      return (
+        <img
+          src={`http://localhost:4000/uploads/${iconName}`}
+          alt="Application Icon"
+          className={className}
+          onError={(e) => {
+            console.log("Failed to load icon image, using fallback");
+            // Fallback ke Globe icon
+            const GlobeIcon = LucideIcons.Globe;
+            // Untuk komponen functional, kita perlu handle ini dengan state
+            // Tapi untuk sementara kita biarkan console log saja
+          }}
+        />
+      );
+    }
 
-  const resolveIcon = (iconName) => {
-    if (!iconName) return LucideIcons.Globe;
+    // Gunakan Lucide icon
     const formattedName = iconName
       .replace(/\s+/g, "")
       .replace(/-/g, "")
       .replace(/\./g, "");
-    return LucideIcons[formattedName] || LucideIcons.Globe;
+    const IconComponent = LucideIcons[formattedName] || LucideIcons.Globe;
+
+    return <IconComponent className={className} />;
   };
 
   // Filter applications based on search query
@@ -184,17 +214,17 @@ export default function SuperAdminDashboardPage() {
           <div className="text-center mt-0">
             {/* Logo Row */}
             <div className="flex items-center justify-center gap-3">
-              <Globe className="w-12 h-12 text-blue-500" />
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight">
-                <span className="text-gray-900">Infra</span>{" "}
-                <span className="text-sky-500">Dash</span>
+              {/* <Globe className="w-12 h-12 text-blue-500" /> */}
+              <h1 className="text-3xl sm:text-3xl md:text-4xl font-semibold leading-tight">
+                <span className="text-gray-900">IT Infrastructure</span>{" "}
+                <span className="text-sky-500">Dashboard</span>
               </h1>
             </div>
 
             {/* Subtitle */}
-            <p className="text-sm sm:text-base text-gray-500 tracking-widest mt-1">
+            {/* <p className="text-sm sm:text-base text-gray-500 tracking-widest mt-1">
               IT INFRASTRUCTURE DASHBOARD
-            </p>
+            </p> */}
           </div>
         </section>
 
@@ -219,8 +249,8 @@ export default function SuperAdminDashboardPage() {
             Object.keys(filteredGroupedApps).map((category) => (
               <div key={category} className="space-y-4">
                 {/* Category Header */}
-                <div className="text-right">
-                  <h3 className="text-1xl font-semibold text-gray-800 py-3 px-6 inline-block">
+                <div className="text-left">
+                  <h3 className="text-1xl font-semibold text-black py-3 px-6 inline-block">
                     Category: {category}
                     <span className="ml-2 font-semibold text-gray-800">
                       ({filteredGroupedApps[category].length} Applications)
@@ -229,37 +259,36 @@ export default function SuperAdminDashboardPage() {
                 </div>
 
                 {/* Applications Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
-                  {filteredGroupedApps[category].map((app, index) => {
-                    const Icon = resolveIcon(app.icon);
-
-                    return (
-                      <div
-                        key={index}
-                        className="relative cursor-pointer bg-blue-600 text-white p-6 sm:p-8 rounded-2xl shadow-lg
-                           transform transition-all duration-300 hover:bg-white hover:text-blue-600
-                           hover:-translate-y-2 h-[220px] sm:h-[250px] flex flex-col justify-center items-center text-center group"
-                      >
-                        <div className="flex justify-center mb-4">
-                          <Icon className="w-16 h-16 sm:w-20 sm:h-20 transition-colors duration-300" />
-                        </div>
-                        <h3 className="text-lg sm:text-xl font-semibold mb-1 truncate max-w-[180px] sm:max-w-[200px]">
-                          {app.title}
-                        </h3>
-                        <div className="text-xs sm:text-sm md:text-base truncate max-w-[180px] sm:max-w-[200px]">
-                          {app.fullName}
-                        </div>
-
-                        {/* Click area for card navigation */}
-                        <div
-                          className="absolute inset-0 z-0 cursor-pointer"
-                          onClick={() => {
-                            window.open(app.url, "_blank");
-                          }}
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-5 gap-4 sm:gap-7 md:gap-6">
+                  {filteredGroupedApps[category].map((app, index) => (
+                    <div
+                      key={index}
+                      className="relative cursor-pointer bg-blue-600 text-white p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-lg
+         transform transition-all duration-300 hover:bg-white hover:text-blue-600
+         hover:-translate-y-1 h-[140px] sm:h-[160px] flex flex-col justify-center items-center text-center group"
+                    >
+                      <div className="flex justify-center mb-2 sm:mb-3">
+                        <AppIcon
+                          iconName={app.icon}
+                          className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 transition-colors duration-300"
                         />
                       </div>
-                    );
-                  })}
+                      <h3 className="text-xs sm:text-sm font-semibold mb-1 truncate max-w-[100px] sm:max-w-[120px] md:max-w-[140px]">
+                        {app.title}
+                      </h3>
+                      <div className="text-[10px] sm:text-xs truncate max-w-[100px] sm:max-w-[120px] md:max-w-[140px]">
+                        {app.fullName}
+                      </div>
+
+                      {/* Click area for card navigation */}
+                      <div
+                        className="absolute inset-0 z-0 cursor-pointer"
+                        onClick={() => {
+                          window.open(app.url, "_blank");
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             ))

@@ -49,6 +49,7 @@ export default function ApplicationsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [showMobileTable, setShowMobileTable] = useState(false);
   const { logout } = useAuth();
+  const [categories, setCategories] = useState([]);
 
   const [newApp, setNewApp] = useState({
     title: "",
@@ -56,7 +57,7 @@ export default function ApplicationsPage() {
     url: "",
     icon: "",
     iconFile: null,
-    category: "",
+    categoryId: "", // Ganti dari category ke categoryId
   });
 
   const [editApp, setEditApp] = useState({
@@ -66,8 +67,24 @@ export default function ApplicationsPage() {
     url: "",
     icon: "",
     iconFile: null,
-    category: "",
+    categoryId: "", // Ganti dari category ke categoryId
   });
+
+  // Fetch categories pada useEffect
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = () => {
+    fetch("http://localhost:4000/categories")
+      .then((res) => res.json())
+      .then((data) => {
+        setCategories(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
 
   // Ganti const itemsPerPage = 8; dengan:
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -83,10 +100,9 @@ export default function ApplicationsPage() {
     } else {
       setItemsPerPage(value);
     }
-    setCurrentPage(1); // Reset ke page 1 ketika ganti items per page
+    setCurrentPage(1);
     setShowEntriesDropdown(false);
   };
-
   // Komponen Show Entries Dropdown
   const ShowEntriesDropdown = () => (
     <div className="relative">
@@ -118,33 +134,32 @@ export default function ApplicationsPage() {
       )}
     </div>
   );
-
   // Fungsi untuk export ke Excel
-  const exportToExcel = () => {
-    try {
-      // Data yang akan di-export (bisa menggunakan filteredApps atau appsList)
-      const dataToExport = filteredApps.length > 0 ? filteredApps : appsList;
+const exportToExcel = () => {
+  try {
+    const dataToExport = filteredApps.length > 0 ? filteredApps : appsList;
 
-      if (dataToExport.length === 0) {
-        Swal.fire({
-          title: "No Data",
-          text: "There is no data to export.",
-          icon: "warning",
-          confirmButtonColor: "#1e40af",
-        });
-        return;
-      }
+    if (dataToExport.length === 0) {
+      Swal.fire({
+        title: "No Data",
+        text: "There is no data to export.",
+        icon: "warning",
+        confirmButtonColor: "#1e40af",
+      });
+      return;
+    }
 
-      // Format data untuk Excel
-      const excelData = dataToExport.map((app, index) => ({
-        No: index + 1,
-        "Application ID": app.id,
-        Title: app.title,
-        "Full Name": app.fullName,
-        URL: app.url,
-        Category: app.category || "Uncategorized",
-        Icon: app.icon || "Default",
-      }));
+    // Format data untuk Excel - PERBAIKI BAGIAN CATEGORY
+    const excelData = dataToExport.map((app, index) => ({
+      No: index + 1,
+      "Application ID": app.id,
+      Title: app.title,
+      "Full Name": app.fullName,
+      URL: app.url,
+      Category: app.category?.name || "Uncategorized", // PERBAIKAN DI SINI
+      Icon: app.icon || "Default",
+    }));
+
 
       // Create worksheet
       const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -182,39 +197,39 @@ export default function ApplicationsPage() {
         icon: "success",
         confirmButtonColor: "#1e40af",
       });
-    } catch (error) {
-      console.error("Error exporting to Excel:", error);
-      Swal.fire({
-        title: "Export Failed",
-        text: "Failed to export data to Excel. Please try again.",
-        icon: "error",
-        confirmButtonColor: "#1e40af",
-      });
-    }
-  };
+  } catch (error) {
+    console.error("Error exporting to Excel:", error);
+    Swal.fire({
+      title: "Export Failed",
+      text: "Failed to export data to Excel. Please try again.",
+      icon: "error",
+      confirmButtonColor: "#1e40af",
+    });
+  }
+};
 
   // Fungsi untuk export semua data (tanpa filter)
-  const exportAllToExcel = () => {
-    try {
-      if (appsList.length === 0) {
-        Swal.fire({
-          title: "No Data",
-          text: "There is no data to export.",
-          icon: "warning",
-          confirmButtonColor: "#1e40af",
-        });
-        return;
-      }
+ const exportAllToExcel = () => {
+  try {
+    if (appsList.length === 0) {
+      Swal.fire({
+        title: "No Data",
+        text: "There is no data to export.",
+        icon: "warning",
+        confirmButtonColor: "#1e40af",
+      });
+      return;
+    }
 
-      const excelData = appsList.map((app, index) => ({
-        No: index + 1,
-        "Application ID": app.id,
-        Title: app.title,
-        "Full Name": app.fullName,
-        URL: app.url,
-        Category: app.category || "Uncategorized",
-        Icon: app.icon || "Default",
-      }));
+    const excelData = appsList.map((app, index) => ({
+      No: index + 1,
+      "Application ID": app.id,
+      Title: app.title,
+      "Full Name": app.fullName,
+      URL: app.url,
+      Category: app.category?.name || "Uncategorized", // PERBAIKAN DI SINI
+      Icon: app.icon || "Default",
+    }));
 
       const worksheet = XLSX.utils.json_to_sheet(excelData);
 
@@ -247,15 +262,15 @@ export default function ApplicationsPage() {
         confirmButtonColor: "#1e40af",
       });
     } catch (error) {
-      console.error("Error exporting to Excel:", error);
-      Swal.fire({
-        title: "Export Failed",
-        text: "Failed to export data to Excel. Please try again.",
-        icon: "error",
-        confirmButtonColor: "#1e40af",
-      });
-    }
-  };
+    console.error("Error exporting to Excel:", error);
+    Swal.fire({
+      title: "Export Failed",
+      text: "Failed to export data to Excel. Please try again.",
+      icon: "error",
+      confirmButtonColor: "#1e40af",
+    });
+  }
+};
 
   // Detect mobile device
   useEffect(() => {
@@ -280,20 +295,53 @@ export default function ApplicationsPage() {
     fetchApplications();
   }, []);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const fetchApplications = () => {
+    setIsLoading(true);
     fetch("http://localhost:4000/applications")
       .then((res) => res.json())
-      .then(setAppsList)
-      .catch(console.error);
+      .then((data) => {
+        setAppsList(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
   };
 
-  const resolveIcon = (iconName) => {
-    if (!iconName) return LucideIcons.Globe;
+  const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
+    if (!iconName) {
+      const GlobeIcon = LucideIcons.Globe;
+      return <GlobeIcon className={className} />;
+    }
+
+    // Cek jika ini uploaded file
+    if (
+      iconName.startsWith("icon-") &&
+      /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
+    ) {
+      return (
+        <img
+          src={`http://localhost:4000/uploads/${iconName}`}
+          alt="Application Icon"
+          className={className}
+          onError={(e) => {
+            console.log("Failed to load icon image");
+          }}
+        />
+      );
+    }
+
+    // Gunakan Lucide icon
     const formattedName = iconName
       .replace(/\s+/g, "")
       .replace(/-/g, "")
       .replace(/\./g, "");
-    return LucideIcons[formattedName] || LucideIcons.Globe;
+    const IconComponent = LucideIcons[formattedName] || LucideIcons.Globe;
+
+    return <IconComponent className={className} />;
   };
 
   // Filter data
@@ -309,17 +357,14 @@ export default function ApplicationsPage() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
   // Mobile Card View
   const MobileAppCard = ({ app }) => {
-    const Icon = resolveIcon(app.icon);
-
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
         <div className="flex justify-between items-start mb-2">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="p-1.5 bg-blue-100 rounded-lg flex-shrink-0">
-              <Icon className="w-4 h-4 text-blue-600" />
+              <AppIcon iconName={app.icon} className="w-4 h-4 text-blue-600" />
             </div>
             <button
               onClick={() => setSelectedApp(app)}
@@ -367,7 +412,7 @@ export default function ApplicationsPage() {
           <div className="flex justify-between">
             <span className="text-gray-600">Category</span>
             <span className="text-gray-900 text-right truncate ml-2">
-              {app.category || "Uncategorized"}
+              {app.category?.name || "Uncategorized"}
             </span>
           </div>
           <div className="flex justify-between">
@@ -393,7 +438,7 @@ export default function ApplicationsPage() {
 
   // Modal Detail Aplikasi
   const AppDetailModal = ({ app, onClose }) => {
-    const Icon = resolveIcon(app.icon);
+    // HAPUS BARIS INI: const Icon = resolveIcon(app.icon);
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-3">
@@ -420,7 +465,11 @@ export default function ApplicationsPage() {
               <div className="space-y-2 text-xs">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-blue-100 rounded-lg">
-                    <Icon className="w-4 h-4 text-blue-600" />
+                    {/* GANTI BARIS INI: */}
+                    <AppIcon
+                      iconName={app.icon}
+                      className="w-4 h-4 text-blue-600"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <label className="text-gray-500 text-xs">Title</label>
@@ -452,7 +501,7 @@ export default function ApplicationsPage() {
             <div className="min-w-0">
               <label className="text-gray-500 text-xs">Category</label>
               <p className="font-semibold text-gray-900 truncate">
-                {app.category || "Uncategorized"}
+                {app.category?.name || "Uncategorized"}
               </p>
             </div>
             {/* URL Information */}
@@ -622,10 +671,10 @@ export default function ApplicationsPage() {
         {/* Hero Section - Mobile Optimized */}
         <section className="max-w-5xl mx-auto text-center py-3 px-3 sm:px-6">
           <div className="text-center">
-            <div className="text-center mt-4">
+            <div className="text-center mt-5">
               {/* Icon + Title */}
               <div className="flex items-center justify-center gap-2">
-                <Cog className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" />
+                {/* <Cog className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" /> */}
                 <h1 className="text-xl sm:text-2xl font-semibold leading-tight">
                   <span className="text-black">Applications</span>{" "}
                   <span className="text-black">Management</span>
@@ -685,14 +734,6 @@ export default function ApplicationsPage() {
 
                       {/* Action Buttons Row */}
                       <div className="flex gap-2 justify-between">
-                        <button
-                          className={`px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-center gap-1 text-xs text-gray-700 ${poppins.className}`}
-                          onClick={fetchApplications}
-                        >
-                          <RefreshCw className="w-3 h-3" />
-                          Refresh
-                        </button>
-
                         <div className="flex gap-2">
                           {/* Tombol Export dengan dropdown */}
                           <div className="relative group">
@@ -791,93 +832,100 @@ export default function ApplicationsPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {currentData.map((app) => {
-                        const Icon = resolveIcon(app.icon);
-
-                        return (
-                          <tr
-                            key={app.id}
-                            className="hover:bg-blue-50/30 transition-all duration-200 group"
-                          >
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <div className="p-1.5 bg-blue-100 rounded-lg">
-                                  <Icon className="w-4 h-4 text-blue-600" />
-                                </div>
-                                <div className="flex flex-col min-w-0">
-                                  <button
-                                    onClick={() => setSelectedApp(app)}
-                                    className={`text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors text-left group-hover:underline truncate ${poppins.className}`}
-                                  >
-                                    {app.title}
-                                  </button>
-                                  <span
-                                    className={`text-xs text-gray-500 ${poppins.className}`}
-                                  >
-                                    ID: {app.id}
-                                  </span>
-                                </div>
+                      {currentData.map((app) => (
+                        <tr
+                          key={app.id}
+                          className="hover:bg-blue-50/30 transition-all duration-200 group"
+                        >
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <div className="p-1.5 bg-blue-100 rounded-lg">
+                                <AppIcon
+                                  iconName={app.icon}
+                                  className="w-4 h-4 text-blue-600"
+                                />
                               </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`text-sm text-gray-900 ${poppins.className} max-w-[120px] truncate block`}
-                              >
-                                {app.fullName}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`font-mono text-xs text-gray-900 max-w-[100px] truncate block ${poppins.className}`}
-                              >
-                                {app.url}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`text-sm text-gray-900 ${poppins.className}`}
-                              >
-                                {app.category || "Uncategorized"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`text-sm text-gray-900 ${poppins.className}`}
-                              >
-                                {app.icon || "Default"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-1">
+                              <div className="flex flex-col min-w-0">
                                 <button
                                   onClick={() => setSelectedApp(app)}
-                                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200"
-                                  title="View Details"
+                                  className={`text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors text-left group-hover:underline truncate ${poppins.className}`}
                                 >
-                                  <Eye className="w-3.5 h-3.5" />
+                                  {app.title}
                                 </button>
-                                <button
-                                  onClick={() => {
-                                    setEditApp(app);
-                                    setShowEditModal(true);
-                                  }}
-                                  className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded transition-all duration-200"
-                                  title="Edit Application"
+                                <span
+                                  className={`text-xs text-gray-500 ${poppins.className}`}
                                 >
-                                  <Edit className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteApp(app)}
-                                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all duration-200"
-                                  title="Delete Application"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
+                                  ID: {app.id}
+                                </span>
                               </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`text-sm text-gray-900 ${poppins.className} max-w-[120px] truncate block`}
+                            >
+                              {app.fullName}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`font-mono text-xs text-gray-900 max-w-[100px] truncate block ${poppins.className}`}
+                            >
+                              {app.url}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`text-sm text-gray-900 ${poppins.className}`}
+                            >
+                              {app.category?.name || "Uncategorized"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`text-sm text-gray-900 ${poppins.className}`}
+                            >
+                              {app.icon || "Default"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => setSelectedApp(app)}
+                                className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-all duration-200"
+                                title="View Details"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditApp({
+                                    id: app.id,
+                                    title: app.title,
+                                    fullName: app.fullName,
+                                    url: app.url,
+                                    icon: app.icon,
+                                    categoryId:
+                                      app.category?.id || app.categoryId,
+                                  });
+                                  setShowEditModal(true);
+                                }}
+                                className="p-1 text-gray-400 hover:text-green-600 rounded transition-all"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteApp(app)}
+                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all duration-200"
+                                title="Delete Application"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -1023,17 +1071,26 @@ export default function ApplicationsPage() {
                   <label className="block text-gray-700 text-xs font-medium mb-1">
                     Category *
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Enter category (e.g., Productivity, Development, etc.)"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
-                    value={newApp.category}
+                  <select
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 bg-white"
+                    value={newApp.categoryId || ""}
                     onChange={(e) =>
-                      setNewApp({ ...newApp, category: e.target.value })
+                      setNewApp({
+                        ...newApp,
+                        categoryId: e.target.value
+                          ? parseInt(e.target.value)
+                          : "",
+                      })
                     }
-                  />
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
                     Application Icon
@@ -1063,7 +1120,7 @@ export default function ApplicationsPage() {
                     }
                   />
 
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-600 mt-1">
                     Use icon names or upload your own icon image
                   </p>
                 </div>
@@ -1084,11 +1141,12 @@ export default function ApplicationsPage() {
                       if (
                         !newApp.title.trim() ||
                         !newApp.fullName.trim() ||
-                        !newApp.url.trim()
+                        !newApp.url.trim() ||
+                        !newApp.categoryId
                       ) {
                         Swal.fire({
                           title: "Validation Error",
-                          text: "Please fill in all required fields (Title, Full Name, and URL).",
+                          text: "Please fill in all required fields (Title, Full Name, URL, and Category).",
                           icon: "warning",
                           confirmButtonColor: "#1e40af",
                         });
@@ -1114,8 +1172,8 @@ export default function ApplicationsPage() {
                       formData.append("url", newApp.url.trim());
                       formData.append("icon", newApp.icon?.trim() || "Globe");
                       formData.append(
-                        "category",
-                        newApp.category?.trim() || "Uncategorized"
+                        "categoryId",
+                        newApp.categoryId.toString()
                       );
 
                       if (newApp.iconFile) {
@@ -1127,6 +1185,7 @@ export default function ApplicationsPage() {
                         fullName: newApp.fullName,
                         url: newApp.url,
                         icon: newApp.icon || "Globe",
+                        categoryId: newApp.categoryId,
                       });
 
                       const res = await fetch(
@@ -1137,10 +1196,6 @@ export default function ApplicationsPage() {
                         }
                       );
 
-                      const responseText = await res.text();
-                      console.log("Response status:", res.status);
-                      console.log("Response text:", responseText);
-
                       if (res.ok) {
                         setShowAddModal(false);
                         setNewApp({
@@ -1149,6 +1204,7 @@ export default function ApplicationsPage() {
                           url: "",
                           icon: "",
                           iconFile: null,
+                          categoryId: "",
                         });
                         fetchApplications();
 
@@ -1159,20 +1215,15 @@ export default function ApplicationsPage() {
                           confirmButtonColor: "#1e40af",
                         });
                       } else {
+                        const responseText = await res.text();
                         let errorMessage = "Failed to save application.";
 
                         try {
                           const errorData = JSON.parse(responseText);
                           errorMessage = errorData.message || errorMessage;
                         } catch (e) {
-                          // Jika response bukan JSON, gunakan teks asli
                           errorMessage = responseText || errorMessage;
                         }
-
-                        console.error("Failed to save application:", {
-                          status: res.status,
-                          message: errorMessage,
-                        });
 
                         Swal.fire({
                           title: "Error",
@@ -1217,7 +1268,7 @@ export default function ApplicationsPage() {
               <div className="space-y-3">
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
-                    Application Title
+                    Application Title *
                   </label>
                   <input
                     type="text"
@@ -1229,9 +1280,10 @@ export default function ApplicationsPage() {
                     }
                   />
                 </div>
+
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
-                    Full Application Name
+                    Full Application Name *
                   </label>
                   <input
                     type="text"
@@ -1246,22 +1298,7 @@ export default function ApplicationsPage() {
 
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
-                    Category
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter category"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
-                    value={editApp.category}
-                    onChange={(e) =>
-                      setEditApp({ ...editApp, category: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 text-xs font-medium mb-1">
-                    Application URL
+                    Application URL *
                   </label>
                   <input
                     type="text"
@@ -1273,6 +1310,32 @@ export default function ApplicationsPage() {
                     }
                   />
                 </div>
+
+                <div>
+                  <label className="block text-gray-700 text-xs font-medium mb-1">
+                    Category *
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 bg-white"
+                    value={editApp.categoryId || editApp.category?.id || ""}
+                    onChange={(e) =>
+                      setEditApp({
+                        ...editApp,
+                        categoryId: e.target.value
+                          ? parseInt(e.target.value)
+                          : "",
+                      })
+                    }
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
                     Application Icon
@@ -1280,14 +1343,30 @@ export default function ApplicationsPage() {
                   <input
                     type="text"
                     placeholder="Enter icon name (Globe, Wifi, Monitor)"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 mb-2"
                     value={editApp.icon}
                     onChange={(e) =>
                       setEditApp({ ...editApp, icon: e.target.value })
                     }
                   />
+
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-full h-px bg-gray-300 flex-1"></div>
+                    <span className="text-gray-500 text-xs">or</span>
+                    <div className="w-full h-px bg-gray-300 flex-1"></div>
+                  </div>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full text-xs text-gray-700 border border-gray-300 rounded cursor-pointer focus:outline-none p-1"
+                    onChange={(e) =>
+                      setEditApp({ ...editApp, iconFile: e.target.files[0] })
+                    }
+                  />
+
                   <p className="text-xs text-gray-500 mt-1">
-                    Change icon name or leave blank for default
+                    Use icon names or upload your own icon image
                   </p>
                 </div>
               </div>
@@ -1299,22 +1378,58 @@ export default function ApplicationsPage() {
                 >
                   Cancel
                 </button>
-                // Di bagian Edit Modal, perbaiki handle submit:
+
                 <button
                   onClick={async () => {
                     try {
+                      // Validasi input
+                      if (
+                        !editApp.title.trim() ||
+                        !editApp.fullName.trim() ||
+                        !editApp.url.trim() ||
+                        !editApp.categoryId
+                      ) {
+                        Swal.fire({
+                          title: "Validation Error",
+                          text: "Please fill in all required fields (Title, Full Name, URL, and Category).",
+                          icon: "warning",
+                          confirmButtonColor: "#1e40af",
+                        });
+                        return;
+                      }
+
+                      // Validasi URL format
+                      try {
+                        new URL(editApp.url);
+                      } catch (urlError) {
+                        Swal.fire({
+                          title: "Invalid URL",
+                          text: "Please enter a valid URL format (e.g., https://example.com).",
+                          icon: "warning",
+                          confirmButtonColor: "#1e40af",
+                        });
+                        return;
+                      }
+
+                      const formData = new FormData();
+                      formData.append("title", editApp.title.trim());
+                      formData.append("fullName", editApp.fullName.trim());
+                      formData.append("url", editApp.url.trim());
+                      formData.append("icon", editApp.icon?.trim() || "Globe");
+                      formData.append(
+                        "categoryId",
+                        editApp.categoryId.toString()
+                      );
+
+                      if (editApp.iconFile) {
+                        formData.append("iconFile", editApp.iconFile);
+                      }
+
                       const res = await fetch(
                         `http://localhost:4000/applications/${editApp.id}`,
                         {
                           method: "PUT",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            title: editApp.title,
-                            fullName: editApp.fullName,
-                            url: editApp.url,
-                            icon: editApp.icon,
-                            category: editApp.category || "Uncategorized", // TAMBAHKAN INI
-                          }),
+                          body: formData,
                         }
                       );
 
@@ -1329,9 +1444,19 @@ export default function ApplicationsPage() {
                           confirmButtonColor: "#1e40af",
                         });
                       } else {
+                        const responseText = await res.text();
+                        let errorMessage = "Failed to update application.";
+
+                        try {
+                          const errorData = JSON.parse(responseText);
+                          errorMessage = errorData.message || errorMessage;
+                        } catch (e) {
+                          errorMessage = responseText || errorMessage;
+                        }
+
                         Swal.fire({
                           title: "Error",
-                          text: "Failed to update application.",
+                          text: errorMessage,
                           icon: "error",
                           confirmButtonColor: "#1e40af",
                         });
@@ -1339,8 +1464,8 @@ export default function ApplicationsPage() {
                     } catch (error) {
                       console.error("Error updating application:", error);
                       Swal.fire({
-                        title: "Error",
-                        text: "Something went wrong. Please try again.",
+                        title: "Connection Error",
+                        text: "Cannot connect to server. Please check if the server is running.",
                         icon: "error",
                         confirmButtonColor: "#1e40af",
                       });
