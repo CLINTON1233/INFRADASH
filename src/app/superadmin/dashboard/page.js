@@ -39,6 +39,7 @@ export default function SuperAdminDashboardPage() {
     totalApps: 0,
     activeApps: 0,
     categories: 0,
+    activeCategories: 0,
     issues: 3,
     servers: 12,
     users: 45,
@@ -86,18 +87,33 @@ export default function SuperAdminDashboardPage() {
       .catch(console.error);
   };
 
+  //Modal Total Apps
+  const [showAppsModal, setShowAppsModal] = useState(false);
+  const [activeApps, setActiveApps] = useState([]);
+  // Modal Category Apps
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryApps, setCategoryApps] = useState([]);
+
   const updateDashboardStats = (apps, grouped) => {
     const activeApps = apps.filter(
       (app) => app.status === "active" || !app.status
     ).length;
 
+    // Hitung jumlah kategori yang memiliki aplikasi aktif
+    const activeCategoriesCount = Object.keys(grouped).filter((category) => {
+      const categoryApps = grouped[category];
+      return categoryApps.some((app) => app.status === "active" || !app.status);
+    }).length;
+
     setDashboardStats({
       totalApps: apps.length,
       activeApps: activeApps,
       categories: Object.keys(grouped).length,
-      issues: Math.floor(Math.random() * 10) + 1, // Simulated data
-      servers: 12, // Simulated data
-      users: 45, // Simulated data
+      activeCategories: activeCategoriesCount,
+      issues: Math.floor(Math.random() * 10) + 1,
+      servers: 12,
+      users: 45,
     });
   };
 
@@ -275,7 +291,7 @@ export default function SuperAdminDashboardPage() {
             <div className="flex items-center justify-center gap-3">
               <h1 className="text-3xl sm:text-3xl md:text-4xl font-semibold leading-tight">
                 <span className="text-gray-900">IT Infrastructure</span>{" "}
-                <span className="text-sky-500">Dashboard</span>
+                <span className="text-sky-500">Portal</span>
               </h1>
             </div>
           </div>
@@ -296,7 +312,17 @@ export default function SuperAdminDashboardPage() {
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
             {/* Total Applications Card */}
-            <div className="bg-blue-600 text-white rounded-2xl p-7 shadow-lg border border-blue-500 transform transition-all duration-300 hover:bg-white hover:text-blue-600 hover:-translate-y-1 group cursor-pointer h-36">
+            <div
+              className="bg-blue-600 text-white rounded-2xl p-7 shadow-lg border border-blue-500 transform transition-all duration-300 hover:bg-white hover:text-blue-600 hover:-translate-y-1 group cursor-pointer h-36"
+              onClick={() => {
+                // Filter aplikasi yang aktif
+                const activeAppsList = appsList.filter(
+                  (app) => app.status === "active" || !app.status
+                );
+                setActiveApps(activeAppsList);
+                setShowAppsModal(true);
+              }}
+            >
               <div className="flex items-center justify-between h-full">
                 <div>
                   <p className="text-blue-100 text-sm font-medium group-hover:text-blue-600">
@@ -315,72 +341,51 @@ export default function SuperAdminDashboardPage() {
               </div>
             </div>
 
-            {/* Categories Card */}
-            <div className="bg-blue-600 text-white rounded-2xl p-7 shadow-lg border border-blue-500 transform transition-all duration-300 hover:bg-white hover:text-blue-600 hover:-translate-y-1 group cursor-pointer h-36">
-              <div className="flex items-center justify-between h-full">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium group-hover:text-blue-600">
-                    Categories
-                  </p>
-                  <h3 className="text-2xl font-bold mt-2 group-hover:text-blue-600">
-                    {dashboardStats.categories}
-                  </h3>
-                  <p className="text-blue-200 text-xs mt-2 group-hover:text-blue-600">
-                    Organized
-                  </p>
-                </div>
-                <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100">
-                  <Server className="w-6 h-6 group-hover:text-blue-600" />
-                </div>
-              </div>
-            </div>
+            {/* Active Categories Cards - Semua biru */}
+            {Object.keys(groupedApps).map((category, index) => {
+              const categoryApps = groupedApps[category];
+              const activeAppsCount = categoryApps.filter(
+                (app) => app.status === "active" || !app.status
+              ).length;
 
-            {/* System Status Card */}
-            <div className="bg-blue-600 text-white rounded-2xl p-7 shadow-lg border border-blue-500 transform transition-all duration-300 hover:bg-white hover:text-blue-600 hover:-translate-y-1 group cursor-pointer h-36">
-              <div className="flex items-center justify-between h-full">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium group-hover:text-blue-600">
-                    System Status
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${getStatusColor(
-                        systemStatus.network
-                      )}`}
-                    ></div>
-                    <span className="font-semibold group-hover:text-blue-600">
-                      Mostly Stable
-                    </span>
+              const categoryIcons = [
+                <Monitor className="w-6 h-6 group-hover:text-blue-600" />,
+                <Wifi className="w-6 h-6 group-hover:text-blue-600" />,
+                <Shield className="w-6 h-6 group-hover:text-blue-600" />,
+                <Users className="w-6 h-6 group-hover:text-blue-600" />,
+                <Globe className="w-6 h-6 group-hover:text-blue-600" />,
+                <Server className="w-6 h-6 group-hover:text-blue-600" />,
+              ];
+
+              return (
+                <div
+                  key={category}
+                  className="bg-blue-600 text-white rounded-2xl p-7 shadow-lg border border-blue-500 transform transition-all duration-300 hover:bg-white hover:text-blue-600 hover:-translate-y-1 group cursor-pointer h-36"
+                  onClick={() => {
+                    setSelectedCategory(category);
+                    setCategoryApps(categoryApps);
+                    setShowCategoryModal(true);
+                  }}
+                >
+                  <div className="flex items-center justify-between h-full">
+                    <div className="flex-1">
+                      <p className="text-blue-100 text-sm font-medium group-hover:text-blue-600 truncate">
+                        {category}
+                      </p>
+                      <h3 className="text-2xl font-bold mt-2 group-hover:text-blue-600">
+                        {categoryApps.length}
+                      </h3>
+                      <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
+                        {activeAppsCount} active
+                      </p>
+                    </div>
+                    <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100 flex-shrink-0">
+                      {categoryIcons[index % categoryIcons.length]}
+                    </div>
                   </div>
-                  <p className="text-blue-200 text-xs mt-2 group-hover:text-yellow-600">
-                    1 service degraded
-                  </p>
                 </div>
-                <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100">
-                  <Activity className="w-6 h-6 group-hover:text-blue-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Active Issues Card */}
-            <div className="bg-blue-600 text-white rounded-2xl p-7 shadow-lg border border-blue-500 transform transition-all duration-300 hover:bg-white hover:text-blue-600 hover:-translate-y-1 group cursor-pointer h-36">
-              <div className="flex items-center justify-between h-full">
-                <div>
-                  <p className="text-blue-100 text-sm font-medium group-hover:text-blue-600">
-                    Active Issues
-                  </p>
-                  <h3 className="text-2xl font-bold mt-2 group-hover:text-blue-600">
-                    {dashboardStats.issues}
-                  </h3>
-                  <p className="text-blue-200 text-xs mt-2 group-hover:text-red-600">
-                    Needs attention
-                  </p>
-                </div>
-                <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100">
-                  <AlertCircle className="w-6 h-6 group-hover:text-blue-600" />
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </section>
         {/* Applications Section - Tambahkan setelah Dashboard Cards Section */}
@@ -448,6 +453,227 @@ export default function SuperAdminDashboardPage() {
             ))
           )}
         </section>
+
+        {/* Active Applications Modal */}
+        {showAppsModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-6 sm:p-8 w-full max-w-4xl max-h-[80vh] overflow-hidden flex flex-col animate-fade-in">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-500 p-2 rounded-lg">
+                    <Globe className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                      Active Applications
+                    </h2>
+                    <p className="text-gray-600 text-sm">
+                      Total {activeApps.length} active applications in this Portal
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowAppsModal(false)}
+                  className="p-2 hover:bg-gray-200 rounded-full transition"
+                >
+                  <X className="w-6 h-6 text-gray-600" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto">
+                {activeApps.length === 0 ? (
+                  <div className="text-center py-10">
+                    <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 text-lg">
+                      No active applications found
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {activeApps.map((app, index) => (
+                      <div
+                        key={index}
+                        className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow duration-300"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0">
+                            <AppIcon
+                              iconName={app.icon}
+                              className="w-10 h-10 text-blue-600"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-800 truncate">
+                              {app.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm truncate">
+                              {app.fullName}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span className="text-xs text-green-600 font-medium">
+                                Active
+                              </span>
+                            </div>
+                            {app.category && (
+                              <div className="mt-2">
+                                <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                  {app.category.name}
+                                </span>
+                              </div>
+                            )}
+                            {app.url && (
+                              <button
+                                onClick={() => window.open(app.url, "_blank")}
+                                className="mt-3 text-xs bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
+                              >
+                                Open App
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer  Total Apps*/}
+              <div className="flex justify-between items-center pt-6 mt-4 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Showing {activeApps.length} of {dashboardStats.totalApps}{" "}
+                  applications
+                </div>
+                <button
+                  onClick={() => setShowAppsModal(false)}
+                  className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Category Applications Modal */}
+        {showCategoryModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-6 sm:p-8 w-full max-w-4xl max-h-[80vh] overflow-hidden flex flex-col animate-fade-in">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-500 p-2 rounded-lg">
+                    <Server className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                      {selectedCategory}
+                    </h2>
+                    <p className="text-gray-600 text-sm">
+                      {categoryApps.length} applications in this category
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowCategoryModal(false)}
+                  className="p-2 hover:bg-gray-200 rounded-full transition"
+                >
+                  <X className="w-6 h-6 text-gray-600" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto">
+                {categoryApps.length === 0 ? (
+                  <div className="text-center py-10">
+                    <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 text-lg">
+                      No applications found in this category
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {categoryApps.map((app, index) => (
+                      <div
+                        key={index}
+                        className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow duration-300"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0">
+                            <AppIcon
+                              iconName={app.icon}
+                              className="w-10 h-10 text-blue-600"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-800 truncate">
+                              {app.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm truncate">
+                              {app.fullName}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  app.status === "active" || !app.status
+                                    ? "bg-green-500"
+                                    : "bg-gray-400"
+                                }`}
+                              ></div>
+                              <span
+                                className={`text-xs font-medium ${
+                                  app.status === "active" || !app.status
+                                    ? "text-green-600"
+                                    : "text-gray-500"
+                                }`}
+                              >
+                                {app.status === "active" || !app.status
+                                  ? "Active"
+                                  : "Inactive"}
+                              </span>
+                            </div>
+                            {app.description && (
+                              <p className="text-gray-500 text-xs mt-2 line-clamp-2">
+                                {app.description}
+                              </p>
+                            )}
+                            {app.url && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(app.url, "_blank");
+                                }}
+                                className="mt-3 text-xs bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
+                              >
+                                Open App
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Category Apps */}
+              <div className="flex justify-between items-center pt-6 mt-4 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Showing {categoryApps.length} applications in{" "}
+                  {selectedCategory}
+                </div>
+                <button
+                  onClick={() => setShowCategoryModal(false)}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Logout Modal */}
         {showLogoutModal && (

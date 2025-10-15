@@ -20,8 +20,8 @@ export default function LandingPage() {
           <Image
             src="/seatrium.png"
             alt="Seatrium Logo"
-            width={140}
-            height={140}
+            width={150}
+            height={150}
             className="object-contain cursor-pointer"
             priority
           />
