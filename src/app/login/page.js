@@ -7,7 +7,7 @@ import { Poppins } from "next/font/google";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
-
+import { API_ENDPOINTS } from "../../config/api";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -25,8 +25,8 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const res = await fetch("http://localhost:4000/users/login", {
+  try {
+      const res = await fetch(API_ENDPOINTS.LOGIN, { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

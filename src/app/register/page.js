@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import Swal from "sweetalert2";
+import { API_ENDPOINTS } from "../../config/api"; 
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -33,10 +34,10 @@ export default function RegisterPage() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:4000/users/register", {
+      const res = await fetch(API_ENDPOINTS.REGISTER, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData), //  langsung kirim role sesuai dropdown
+        body: JSON.stringify(formData), 
       });
 
       const data = await res.json();

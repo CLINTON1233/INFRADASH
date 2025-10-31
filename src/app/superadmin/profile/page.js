@@ -8,6 +8,7 @@ import { User, AlertTriangle, X, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useAuth } from '../../context/AuthContext';
+import { API_ENDPOINTS } from "../../../config/api"; 
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -47,7 +48,7 @@ const handleLogout = () => {
   const handleSave = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/users/${userData.id}`,
+        API_ENDPOINTS.USER_BY_ID(userData.id), 
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

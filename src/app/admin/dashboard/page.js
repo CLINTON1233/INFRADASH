@@ -21,7 +21,7 @@ import * as LucideIcons from "lucide-react";
 import Swal from "sweetalert2";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useAuth } from "../../context/AuthContext";
-
+import { API_ENDPOINTS } from "../../../config/api"; 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -72,20 +72,20 @@ export default function SuperAdminDashboardPage() {
     fetchApplications();
   }, []);
 
-  const fetchApplications = () => {
-    fetch("http://localhost:4000/applications")
-      .then((res) => res.json())
-      .then((data) => {
-        setAppsList(data);
-        // Group applications by category
-        const grouped = groupAppsByCategory(data);
-        setGroupedApps(grouped);
+const fetchApplications = () => {
+  fetch(API_ENDPOINTS.APPLICATIONS) 
+    .then((res) => res.json())
+    .then((data) => {
+      setAppsList(data);
+      // Group applications by category
+      const grouped = groupAppsByCategory(data);
+      setGroupedApps(grouped);
 
-        // Update dashboard stats
-        updateDashboardStats(data, grouped);
-      })
-      .catch(console.error);
-  };
+      // Update dashboard stats
+      updateDashboardStats(data, grouped);
+    })
+    .catch(console.error);
+};
 
   //Modal Total Apps
   const [showAppsModal, setShowAppsModal] = useState(false);
@@ -138,21 +138,21 @@ export default function SuperAdminDashboardPage() {
       return <GlobeIcon className={className} />;
     }
 
-    if (
-      iconName.startsWith("icon-") &&
-      /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
-    ) {
-      return (
-        <img
-          src={`http://localhost:4000/uploads/${iconName}`}
-          alt="Application Icon"
-          className={className}
-          onError={(e) => {
-            console.log("Failed to load icon image, using fallback");
-          }}
-        />
-      );
-    }
+ if (
+    iconName.startsWith("icon-") &&
+    /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
+  ) {
+    return (
+      <img
+        src={getUploadUrl(iconName)} 
+        alt="Application Icon"
+        className={className}
+        onError={(e) => {
+          console.log("Failed to load icon image, using fallback");
+        }}
+      />
+    );
+  }
 
     const formattedName = iconName
       .replace(/\s+/g, "")

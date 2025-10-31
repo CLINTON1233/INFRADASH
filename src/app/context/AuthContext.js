@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
 
   const checkRouteAccess = () => {
     // Routes yang boleh diakses tanpa login
-    const publicRoutes = ['/login', '/register', '/landing-page'];
+    const publicRoutes = [ '/landing-page', '/login', '/register',];
     
     if (loading) return;
 

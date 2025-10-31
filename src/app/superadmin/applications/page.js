@@ -29,6 +29,7 @@ import Swal from "sweetalert2";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useAuth } from "../../context/AuthContext";
 import * as XLSX from "xlsx";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -76,7 +77,7 @@ export default function ApplicationsPage() {
   }, []);
 
   const fetchCategories = () => {
-    fetch("http://localhost:4000/categories")
+    fetch(API_ENDPOINTS.CATEGORIES)
       .then((res) => res.json())
       .then((data) => {
         setCategories(data);
@@ -85,7 +86,6 @@ export default function ApplicationsPage() {
         console.error("Error fetching categories:", error);
       });
   };
-
   // Ganti const itemsPerPage = 8; dengan:
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showEntriesDropdown, setShowEntriesDropdown] = useState(false);
@@ -135,31 +135,30 @@ export default function ApplicationsPage() {
     </div>
   );
   // Fungsi untuk export ke Excel
-const exportToExcel = () => {
-  try {
-    const dataToExport = filteredApps.length > 0 ? filteredApps : appsList;
+  const exportToExcel = () => {
+    try {
+      const dataToExport = filteredApps.length > 0 ? filteredApps : appsList;
 
-    if (dataToExport.length === 0) {
-      Swal.fire({
-        title: "No Data",
-        text: "There is no data to export.",
-        icon: "warning",
-        confirmButtonColor: "#1e40af",
-      });
-      return;
-    }
+      if (dataToExport.length === 0) {
+        Swal.fire({
+          title: "No Data",
+          text: "There is no data to export.",
+          icon: "warning",
+          confirmButtonColor: "#1e40af",
+        });
+        return;
+      }
 
-    // Format data untuk Excel - PERBAIKI BAGIAN CATEGORY
-    const excelData = dataToExport.map((app, index) => ({
-      No: index + 1,
-      "Application ID": app.id,
-      Title: app.title,
-      "Full Name": app.fullName,
-      URL: app.url,
-      Category: app.category?.name || "Uncategorized", // PERBAIKAN DI SINI
-      Icon: app.icon || "Default",
-    }));
-
+      // Format data untuk Excel - PERBAIKI BAGIAN CATEGORY
+      const excelData = dataToExport.map((app, index) => ({
+        No: index + 1,
+        "Application ID": app.id,
+        Title: app.title,
+        "Full Name": app.fullName,
+        URL: app.url,
+        Category: app.category?.name || "Uncategorized", // PERBAIKAN DI SINI
+        Icon: app.icon || "Default",
+      }));
 
       // Create worksheet
       const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -197,39 +196,39 @@ const exportToExcel = () => {
         icon: "success",
         confirmButtonColor: "#1e40af",
       });
-  } catch (error) {
-    console.error("Error exporting to Excel:", error);
-    Swal.fire({
-      title: "Export Failed",
-      text: "Failed to export data to Excel. Please try again.",
-      icon: "error",
-      confirmButtonColor: "#1e40af",
-    });
-  }
-};
-
-  // Fungsi untuk export semua data (tanpa filter)
- const exportAllToExcel = () => {
-  try {
-    if (appsList.length === 0) {
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
       Swal.fire({
-        title: "No Data",
-        text: "There is no data to export.",
-        icon: "warning",
+        title: "Export Failed",
+        text: "Failed to export data to Excel. Please try again.",
+        icon: "error",
         confirmButtonColor: "#1e40af",
       });
-      return;
     }
+  };
 
-    const excelData = appsList.map((app, index) => ({
-      No: index + 1,
-      "Application ID": app.id,
-      Title: app.title,
-      "Full Name": app.fullName,
-      URL: app.url,
-      Category: app.category?.name || "Uncategorized", // PERBAIKAN DI SINI
-      Icon: app.icon || "Default",
-    }));
+  // Fungsi untuk export semua data (tanpa filter)
+  const exportAllToExcel = () => {
+    try {
+      if (appsList.length === 0) {
+        Swal.fire({
+          title: "No Data",
+          text: "There is no data to export.",
+          icon: "warning",
+          confirmButtonColor: "#1e40af",
+        });
+        return;
+      }
+
+      const excelData = appsList.map((app, index) => ({
+        No: index + 1,
+        "Application ID": app.id,
+        Title: app.title,
+        "Full Name": app.fullName,
+        URL: app.url,
+        Category: app.category?.name || "Uncategorized", // PERBAIKAN DI SINI
+        Icon: app.icon || "Default",
+      }));
 
       const worksheet = XLSX.utils.json_to_sheet(excelData);
 
@@ -262,15 +261,15 @@ const exportToExcel = () => {
         confirmButtonColor: "#1e40af",
       });
     } catch (error) {
-    console.error("Error exporting to Excel:", error);
-    Swal.fire({
-      title: "Export Failed",
-      text: "Failed to export data to Excel. Please try again.",
-      icon: "error",
-      confirmButtonColor: "#1e40af",
-    });
-  }
-};
+      console.error("Error exporting to Excel:", error);
+      Swal.fire({
+        title: "Export Failed",
+        text: "Failed to export data to Excel. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#1e40af",
+      });
+    }
+  };
 
   // Detect mobile device
   useEffect(() => {
@@ -299,7 +298,7 @@ const exportToExcel = () => {
 
   const fetchApplications = () => {
     setIsLoading(true);
-    fetch("http://localhost:4000/applications")
+    fetch(API_ENDPOINTS.APPLICATIONS)
       .then((res) => res.json())
       .then((data) => {
         setAppsList(data);
@@ -324,16 +323,16 @@ const exportToExcel = () => {
     ) {
       return (
         <img
-          src={`http://localhost:4000/uploads/${iconName}`}
+          src={`${API_ENDPOINTS.UPLOADS}/${iconName}`}
           alt="Application Icon"
           className={className}
           onError={(e) => {
             console.log("Failed to load icon image");
+            e.target.style.display = "none";
           }}
         />
       );
     }
-
     // Gunakan Lucide icon
     const formattedName = iconName
       .replace(/\s+/g, "")
@@ -567,7 +566,7 @@ const exportToExcel = () => {
 
     if (result.isConfirmed) {
       try {
-        await fetch(`http://localhost:4000/applications/${app.id}`, {
+        await fetch(API_ENDPOINTS.APPLICATION_BY_ID(app.id), {
           method: "DELETE",
         });
         fetchApplications();
@@ -1188,13 +1187,10 @@ const exportToExcel = () => {
                         categoryId: newApp.categoryId,
                       });
 
-                      const res = await fetch(
-                        "http://localhost:4000/applications",
-                        {
-                          method: "POST",
-                          body: formData,
-                        }
-                      );
+                      const res = await fetch(API_ENDPOINTS.APPLICATIONS, {
+                        method: "POST",
+                        body: formData,
+                      });
 
                       if (res.ok) {
                         setShowAddModal(false);
@@ -1426,7 +1422,7 @@ const exportToExcel = () => {
                       }
 
                       const res = await fetch(
-                        `http://localhost:4000/applications/${editApp.id}`,
+                        API_ENDPOINTS.APPLICATION_BY_ID(editApp.id),
                         {
                           method: "PUT",
                           body: formData,
