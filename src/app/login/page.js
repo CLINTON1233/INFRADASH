@@ -119,12 +119,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Link
-          href="/register"
-          className="text-sm hover:text-gray-500 font-bold transition"
-        >
-          Sign up
-        </Link>
+   
       </div>
       {/* Main Content */}
       <div className="max-w-lg w-full mx-auto px-4 py-10">
@@ -137,7 +132,7 @@ export default function LoginPage() {
         {/* Login Form */}
         <form
           onSubmit={handleSubmit}
-          className="space-y-3 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-lg mt-4"
+          className="space-y-3 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-lg mt-6"
         >
           {/* Title di dalam form */}
           <div className="flex flex-col items-center mb-6 text-center text-black">
@@ -204,26 +199,13 @@ export default function LoginPage() {
             </Link>
           </p> */}
 
-          {/* Sign up */}
-          <p className="text-sm text-gray-700 text-center mt-1">
-            Don't have an account?{" "}
-            <Link href="/register" className="underline text-blue-600">
-              Sign up
-            </Link>
-          </p>
+         
         </form>
       </div>
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
         <p>
-          IT Infrastructure Dashboard Created by{" "}
-          <a
-            href="https://www.linkedin.com/in/clinton-alfaro/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-white hover:underline"
-          >
-            @Clinton Alfaro
-          </a>
+          IT Infrastructure Dashboard{" "}
+       
         </p>
         <Link
           href="https://seatrium.com"

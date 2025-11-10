@@ -713,7 +713,7 @@ const fetchApplications = () => {
 
         {/* Footer */}
         <footer className="mt-auto py-4 text-center text-white text-xs sm:text-sm space-y-1 border-t border-white/30 px-4 sm:px-6">
-          <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
+          <p>IT Infrastructure Dashboard </p>
           <p>seatrium.com</p>
         </footer>
       </div>

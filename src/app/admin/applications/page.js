@@ -943,7 +943,7 @@ export default function ApplicationsPage() {
 
         {/* Footer - Mobile Optimized */}
         <footer className="mt-auto py-3 text-center text-white text-xs space-y-1 border-t border-white/30 px-3">
-          <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
+          <p>IT Infrastructure Dashboard </p>
           <p>seatrium.com</p>
         </footer>
       </div>

@@ -312,7 +312,7 @@ export default function ProfilePage() {
         )}
 
         <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
-          <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
+          <p>IT Infrastructure Dashboard </p>
           <p>seatrium.com</p>
         </footer>
       </div>

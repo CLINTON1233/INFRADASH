@@ -135,6 +135,12 @@ const handleLogout = () => {
             >
               Applications
             </Link>
+                  <Link
+                href="/superadmin/management_users"
+                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
+              >
+                Management Users
+              </Link>
             <Link
               href="/superadmin/profile"
               className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
@@ -311,7 +317,7 @@ const handleLogout = () => {
       )}
 
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
-        <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
+        <p>IT Infrastructure Dashboard</p>
         <p>seatrium.com</p>
       </footer>
     </div>

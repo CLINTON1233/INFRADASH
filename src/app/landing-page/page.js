@@ -148,15 +148,8 @@ export default function LandingPage() {
 
         {/*  FOOTER TEKS POLOS */}
         <footer className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center text-white text-sm opacity-80">
-          IT Infrastructure Dashboard Created by{" "}
-          <a
-            href="https://www.linkedin.com/in/clinton-alfaro/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-white hover:underline"
-          >
-            @Clinton Alfaro
-          </a>{" "}
+          IT Infrastructure Dashboard {" "}
+       {" "}
           •{" "}
           <Link
             href="https://seatrium.com"

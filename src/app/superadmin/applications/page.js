@@ -652,6 +652,12 @@ export default function ApplicationsPage() {
               >
                 Applications
               </Link>
+                    <Link
+                href="/superadmin/management_users"
+                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
+              >
+                Management Users
+              </Link>
               <Link
                 href="/superadmin/profile"
                 className="hover:text-gray-200 transition px-2 py-1 rounded  text-center text-xs sm:text-sm"
@@ -1513,7 +1519,7 @@ export default function ApplicationsPage() {
 
         {/* Footer - Mobile Optimized */}
         <footer className="mt-auto py-3 text-center text-white text-xs space-y-1 border-t border-white/30 px-3">
-          <p>IT Infrastructure Dashboard Created by @Clinton Alfaro</p>
+          <p>IT Infrastructure Dashboard</p>
           <p>seatrium.com</p>
         </footer>
       </div>
