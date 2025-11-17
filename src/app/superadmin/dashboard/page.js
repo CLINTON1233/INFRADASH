@@ -337,8 +337,7 @@ const fetchApplications = () => {
                     {dashboardStats.totalApps}
                   </h3>
                   <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
-                  All Applications
-          
+             
                   </p>
                 </div>
                 <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100">
@@ -382,7 +381,7 @@ const fetchApplications = () => {
                         {categoryApps.length}
                       </h3>
                       <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
-                        {category} applications
+                       
                       </p>
                     </div>
                     <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100 flex-shrink-0">
