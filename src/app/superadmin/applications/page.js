@@ -51,6 +51,45 @@ export default function ApplicationsPage() {
   const [showMobileTable, setShowMobileTable] = useState(false);
   const { logout } = useAuth();
   const [categories, setCategories] = useState([]);
+  const [icons, setIcons] = useState([]);
+  const [showIconDropdown, setShowIconDropdown] = useState(false);
+  const [iconSearch, setIconSearch] = useState("");
+  const [showEditIconDropdown, setShowEditIconDropdown] = useState(false);
+  const [editIconSearch, setEditIconSearch] = useState("");
+  useEffect(() => {
+    fetchCategories();
+    fetchIcons();
+  }, []);
+
+const fetchIcons = () => {
+  console.log('🔍 Fetching icons from:', API_ENDPOINTS.ICONS);
+  
+  fetch(API_ENDPOINTS.ICONS)
+    .then((res) => {
+      console.log('📡 Icons response status:', res.status, res.statusText);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log('✅ Icons data received:', data);
+      console.log('📊 Data type:', typeof data);
+      console.log('🔢 Data length:', Array.isArray(data) ? data.length : 'Not an array');
+      
+      if (Array.isArray(data)) {
+        setIcons(data);
+        console.log(`🎉 ${data.length} icons loaded successfully`);
+      } else {
+        console.error("❌ Icons data is not an array:", data);
+        setIcons([]);
+      }
+    })
+    .catch((error) => {
+      console.error("❌ Error fetching icons:", error);
+      setIcons([]);
+    });
+};
 
   const [newApp, setNewApp] = useState({
     title: "",
@@ -310,39 +349,129 @@ export default function ApplicationsPage() {
       });
   };
 
-  const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
-    if (!iconName) {
-      const GlobeIcon = LucideIcons.Globe;
-      return <GlobeIcon className={className} />;
-    }
+const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
+  if (!iconName) {
+    const GlobeIcon = LucideIcons.Globe;
+    return <GlobeIcon className={className} />;
+  }
 
-    // Cek jika ini uploaded file
-    if (
-      iconName.startsWith("icon-") &&
-      /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
-    ) {
-      return (
-        <img
-          src={`${API_ENDPOINTS.UPLOADS}/${iconName}`}
-          alt="Application Icon"
-          className={className}
-          onError={(e) => {
-            console.log("Failed to load icon image");
-            e.target.style.display = "none";
-          }}
-        />
-      );
-    }
-    // Gunakan Lucide icon
-    const formattedName = iconName
-      .replace(/\s+/g, "")
-      .replace(/-/g, "")
-      .replace(/\./g, "");
-    const IconComponent = LucideIcons[formattedName] || LucideIcons.Globe;
+  // Cek jika ini uploaded file
+  if (
+    iconName.startsWith("icon-") &&
+    /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
+  ) {
+    return (
+      <img
+        src={`${API_ENDPOINTS.UPLOADS}/${iconName}`}
+        alt="Application Icon"
+        className={className}
+        onError={(e) => {
+          console.log("Failed to load icon image");
+          e.target.style.display = "none";
+        }}
+      />
+    );
+  }
 
-    return <IconComponent className={className} />;
+  // Gunakan Lucide icon berdasarkan key
+  const IconComponent = LucideIcons[iconName] || LucideIcons.Globe;
+  return <IconComponent className={className} />;
+};
+
+  const IconDropdown = ({
+    selectedIcon,
+    onSelectIcon,
+    isOpen,
+    onToggle,
+    searchQuery,
+    onSearchChange,
+  }) => {
+    // Safety check: pastikan icons adalah array
+    const safeIcons = Array.isArray(icons) ? icons : [];
+
+    const filteredIcons = safeIcons.filter(
+      (icon) =>
+        icon.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        icon.icon_key?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const IconComponent = ({ iconKey, className = "w-4 h-4" }) => {
+      const Icon = LucideIcons[iconKey] || LucideIcons.Globe;
+      return <Icon className={className} />;
+    };
+
+    return (
+      <div className="relative">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 bg-white flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2">
+            {selectedIcon ? (
+              <>
+                <IconComponent iconKey={selectedIcon.icon_key} />
+                <span>{selectedIcon.name}</span>
+              </>
+            ) : (
+              <span className="text-gray-500">Select an icon</span>
+            )}
+          </div>
+          <ChevronDown className="w-4 h-4 text-gray-400" />
+        </button>
+
+        {isOpen && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-hidden">
+            {/* Search Input */}
+            <div className="p-2 border-b border-gray-200">
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search icons..."
+                  className="w-full pl-8 pr-3 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Icons List */}
+            <div className="overflow-y-auto max-h-48">
+              {filteredIcons.length > 0 ? (
+                <div className="grid grid-cols-1 gap-1 p-1">
+                  {filteredIcons.map((icon) => (
+                    <button
+                      key={icon.id}
+                      type="button"
+                      onClick={() => onSelectIcon(icon)}
+                      className={`flex items-center gap-3 px-3 py-2 text-sm text-left rounded hover:bg-blue-50 hover:text-blue-600 transition ${
+                        selectedIcon?.id === icon.id
+                          ? "bg-blue-100 text-blue-600"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      <IconComponent iconKey={icon.icon_key} />
+                      <div className="flex-1">
+                        <div className="font-medium">{icon.name}</div>
+                        <div className="text-xs text-gray-500">
+                          {icon.category}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 text-center text-gray-500 text-sm">
+                  No icons found
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
-
   // Filter data
   const filteredApps = appsList.filter(
     (app) =>
@@ -652,7 +781,7 @@ export default function ApplicationsPage() {
               >
                 Applications
               </Link>
-                    <Link
+              <Link
                 href="/superadmin/management_users"
                 className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
               >
@@ -1096,21 +1225,28 @@ export default function ApplicationsPage() {
                     ))}
                   </select>
                 </div>
+
+                {/* Di dalam Add Modal - bagian icon */}
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
                     Application Icon
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Enter icon name (Globe, Wifi, Monitor)"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 mb-2"
-                    value={newApp.icon}
-                    onChange={(e) =>
-                      setNewApp({ ...newApp, icon: e.target.value })
-                    }
+
+                  <IconDropdown
+                    selectedIcon={icons.find(
+                      (icon) => icon.icon_key === newApp.icon
+                    )}
+                    onSelectIcon={(icon) => {
+                      setNewApp({ ...newApp, icon: icon.icon_key });
+                      setShowIconDropdown(false);
+                    }}
+                    isOpen={showIconDropdown}
+                    onToggle={() => setShowIconDropdown(!showIconDropdown)}
+                    searchQuery={iconSearch}
+                    onSearchChange={setIconSearch}
                   />
 
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 my-2">
                     <div className="w-full h-px bg-gray-300 flex-1"></div>
                     <span className="text-gray-500 text-xs">or</span>
                     <div className="w-full h-px bg-gray-300 flex-1"></div>
@@ -1126,7 +1262,7 @@ export default function ApplicationsPage() {
                   />
 
                   <p className="text-xs text-gray-600 mt-1">
-                    Use icon names or upload your own icon image
+                    Choose from icon library or upload your own icon image
                   </p>
                 </div>
               </div>
@@ -1338,21 +1474,30 @@ export default function ApplicationsPage() {
                   </select>
                 </div>
 
+                {/* Di dalam Add Modal dan Edit Modal - ganti bagian icon */}
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
                     Application Icon
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Enter icon name (Globe, Wifi, Monitor)"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 mb-2"
-                    value={editApp.icon}
-                    onChange={(e) =>
-                      setEditApp({ ...editApp, icon: e.target.value })
-                    }
+
+                  <IconDropdown
+                    selectedIcon={icons.find(
+                      // PERBAIKI: ganti newApp dengan editApp
+                      (icon) => icon.icon_key === editApp.icon
+                    )}
+                    onSelectIcon={(icon) => {
+                      setEditApp({ ...editApp, icon: icon.icon_key }); // PERBAIKI: ganti newApp dengan editApp
+                      setShowEditIconDropdown(false); // PERBAIKI: gunakan state yang benar
+                    }}
+                    isOpen={showEditIconDropdown} // PERBAIKI: gunakan state yang benar
+                    onToggle={() =>
+                      setShowEditIconDropdown(!showEditIconDropdown)
+                    } // PERBAIKI: gunakan state yang benar
+                    searchQuery={editIconSearch} // PERBAIKI: gunakan state yang benar
+                    onSearchChange={setEditIconSearch} // PERBAIKI: gunakan state yang benar
                   />
 
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 my-2">
                     <div className="w-full h-px bg-gray-300 flex-1"></div>
                     <span className="text-gray-500 text-xs">or</span>
                     <div className="w-full h-px bg-gray-300 flex-1"></div>
@@ -1362,13 +1507,14 @@ export default function ApplicationsPage() {
                     type="file"
                     accept="image/*"
                     className="w-full text-xs text-gray-700 border border-gray-300 rounded cursor-pointer focus:outline-none p-1"
-                    onChange={(e) =>
-                      setEditApp({ ...editApp, iconFile: e.target.files[0] })
+                    onChange={
+                      (e) =>
+                        setEditApp({ ...editApp, iconFile: e.target.files[0] }) // PERBAIKI: ganti newApp dengan editApp
                     }
                   />
 
-                  <p className="text-xs text-gray-500 mt-1">
-                    Use icon names or upload your own icon image
+                  <p className="text-xs text-gray-600 mt-1">
+                    Choose from icon library or upload your own icon image
                   </p>
                 </div>
               </div>

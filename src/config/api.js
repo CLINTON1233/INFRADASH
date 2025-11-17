@@ -16,7 +16,9 @@ export const API_ENDPOINTS = {
   // Applications
   APPLICATIONS: `${API_BASE_URL}/applications`,
   APPLICATION_BY_ID: (id) => `${API_BASE_URL}/applications/${id}`,
-  
+
+  //Icons
+ ICONS: `${API_BASE_URL}/icons`,
   // Uploads
   UPLOADS: `${API_BASE_URL}/uploads`,
 };
