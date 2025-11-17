@@ -61,35 +61,42 @@ export default function ApplicationsPage() {
     fetchIcons();
   }, []);
 
-const fetchIcons = () => {
-  console.log('🔍 Fetching icons from:', API_ENDPOINTS.ICONS);
-  
-  fetch(API_ENDPOINTS.ICONS)
-    .then((res) => {
-      console.log('📡 Icons response status:', res.status, res.statusText);
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      return res.json();
-    })
-    .then((data) => {
-      console.log('✅ Icons data received:', data);
-      console.log('📊 Data type:', typeof data);
-      console.log('🔢 Data length:', Array.isArray(data) ? data.length : 'Not an array');
-      
-      if (Array.isArray(data)) {
-        setIcons(data);
-        console.log(`🎉 ${data.length} icons loaded successfully`);
-      } else {
-        console.error("❌ Icons data is not an array:", data);
+  const fetchIcons = () => {
+    console.log("🔍 Fetching icons from:", API_ENDPOINTS.ICONS);
+
+    fetch(API_ENDPOINTS.ICONS)
+      .then((res) => {
+        console.log("📡 Icons response status:", res.status, res.statusText);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log("✅ Icons data received:", data);
+        console.log("📊 Data type:", typeof data);
+        console.log(
+          "🔢 Data length:",
+          Array.isArray(data) ? data.length : "Not an array"
+        );
+
+        if (Array.isArray(data)) {
+          setIcons(data);
+          console.log(`🎉 ${data.length} icons loaded successfully`);
+        } else {
+          console.error("❌ Icons data is not an array:", data);
+          setIcons([]);
+        }
+      })
+      .catch((error) => {
+        console.error("❌ Error fetching icons:", error);
         setIcons([]);
-      }
-    })
-    .catch((error) => {
-      console.error("❌ Error fetching icons:", error);
-      setIcons([]);
-    });
-};
+      });
+  };
+
+  useEffect(() => {
+    console.log(" Icons state updated:", icons);
+  }, [icons]);
 
   const [newApp, setNewApp] = useState({
     title: "",
@@ -97,7 +104,7 @@ const fetchIcons = () => {
     url: "",
     icon: "",
     iconFile: null,
-    categoryId: "", // Ganti dari category ke categoryId
+    categoryId: "",
   });
 
   const [editApp, setEditApp] = useState({
@@ -107,7 +114,7 @@ const fetchIcons = () => {
     url: "",
     icon: "",
     iconFile: null,
-    categoryId: "", // Ganti dari category ke categoryId
+    categoryId: "",
   });
 
   // Fetch categories pada useEffect
@@ -349,34 +356,34 @@ const fetchIcons = () => {
       });
   };
 
-const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
-  if (!iconName) {
-    const GlobeIcon = LucideIcons.Globe;
-    return <GlobeIcon className={className} />;
-  }
+  const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
+    if (!iconName) {
+      const GlobeIcon = LucideIcons.Globe;
+      return <GlobeIcon className={className} />;
+    }
 
-  // Cek jika ini uploaded file
-  if (
-    iconName.startsWith("icon-") &&
-    /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
-  ) {
-    return (
-      <img
-        src={`${API_ENDPOINTS.UPLOADS}/${iconName}`}
-        alt="Application Icon"
-        className={className}
-        onError={(e) => {
-          console.log("Failed to load icon image");
-          e.target.style.display = "none";
-        }}
-      />
-    );
-  }
+    // Cek jika ini uploaded file
+    if (
+      iconName.startsWith("icon-") &&
+      /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
+    ) {
+      return (
+        <img
+          src={`${API_ENDPOINTS.UPLOADS}/${iconName}`}
+          alt="Application Icon"
+          className={className}
+          onError={(e) => {
+            console.log("Failed to load icon image");
+            e.target.style.display = "none";
+          }}
+        />
+      );
+    }
 
-  // Gunakan Lucide icon berdasarkan key
-  const IconComponent = LucideIcons[iconName] || LucideIcons.Globe;
-  return <IconComponent className={className} />;
-};
+    // Gunakan Lucide icon berdasarkan key
+    const IconComponent = LucideIcons[iconName] || LucideIcons.Globe;
+    return <IconComponent className={className} />;
+  };
 
   const IconDropdown = ({
     selectedIcon,
@@ -396,6 +403,7 @@ const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
     );
 
     const IconComponent = ({ iconKey, className = "w-4 h-4" }) => {
+      // Pastikan iconKey valid dan ada di LucideIcons
       const Icon = LucideIcons[iconKey] || LucideIcons.Globe;
       return <Icon className={className} />;
     };
@@ -780,6 +788,12 @@ const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
                 className="hover:text-gray-200 transition px-2 py-1 rounded  text-center text-xs sm:text-sm"
               >
                 Applications
+              </Link>
+              <Link
+                href="/superadmin/management_categories"
+                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
+              >
+                Management Categories
               </Link>
               <Link
                 href="/superadmin/management_users"
@@ -1227,6 +1241,7 @@ const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
                 </div>
 
                 {/* Di dalam Add Modal - bagian icon */}
+                {/* Di dalam Add Modal - bagian icon */}
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
                     Application Icon
@@ -1239,9 +1254,13 @@ const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
                     onSelectIcon={(icon) => {
                       setNewApp({ ...newApp, icon: icon.icon_key });
                       setShowIconDropdown(false);
+                      setIconSearch(""); // Reset search setelah select
                     }}
                     isOpen={showIconDropdown}
-                    onToggle={() => setShowIconDropdown(!showIconDropdown)}
+                    onToggle={() => {
+                      setShowIconDropdown(!showIconDropdown);
+                      setIconSearch(""); // Reset search ketika toggle
+                    }}
                     searchQuery={iconSearch}
                     onSearchChange={setIconSearch}
                   />
@@ -1474,7 +1493,8 @@ const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
                   </select>
                 </div>
 
-                {/* Di dalam Add Modal dan Edit Modal - ganti bagian icon */}
+                {/* Di dalam  Edit Modal - ganti bagian icon */}
+                {/* Di dalam Edit Modal - bagian icon */}
                 <div>
                   <label className="block text-gray-700 text-xs font-medium mb-1">
                     Application Icon
@@ -1482,19 +1502,20 @@ const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
 
                   <IconDropdown
                     selectedIcon={icons.find(
-                      // PERBAIKI: ganti newApp dengan editApp
                       (icon) => icon.icon_key === editApp.icon
                     )}
                     onSelectIcon={(icon) => {
-                      setEditApp({ ...editApp, icon: icon.icon_key }); // PERBAIKI: ganti newApp dengan editApp
-                      setShowEditIconDropdown(false); // PERBAIKI: gunakan state yang benar
+                      setEditApp({ ...editApp, icon: icon.icon_key });
+                      setShowEditIconDropdown(false);
+                      setEditIconSearch(""); // Reset search setelah select
                     }}
-                    isOpen={showEditIconDropdown} // PERBAIKI: gunakan state yang benar
-                    onToggle={() =>
-                      setShowEditIconDropdown(!showEditIconDropdown)
-                    } // PERBAIKI: gunakan state yang benar
-                    searchQuery={editIconSearch} // PERBAIKI: gunakan state yang benar
-                    onSearchChange={setEditIconSearch} // PERBAIKI: gunakan state yang benar
+                    isOpen={showEditIconDropdown}
+                    onToggle={() => {
+                      setShowEditIconDropdown(!showEditIconDropdown);
+                      setEditIconSearch(""); // Reset search ketika toggle
+                    }}
+                    searchQuery={editIconSearch}
+                    onSearchChange={setEditIconSearch}
                   />
 
                   <div className="flex items-center gap-2 my-2">
@@ -1507,9 +1528,8 @@ const AppIcon = ({ iconName, className = "w-4 h-4 text-blue-600" }) => {
                     type="file"
                     accept="image/*"
                     className="w-full text-xs text-gray-700 border border-gray-300 rounded cursor-pointer focus:outline-none p-1"
-                    onChange={
-                      (e) =>
-                        setEditApp({ ...editApp, iconFile: e.target.files[0] }) // PERBAIKI: ganti newApp dengan editApp
+                    onChange={(e) =>
+                      setEditApp({ ...editApp, iconFile: e.target.files[0] })
                     }
                   />
 

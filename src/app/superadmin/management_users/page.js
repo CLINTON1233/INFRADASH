@@ -46,7 +46,7 @@ export default function SuperAdminManagementUsersPage() {
   const [showEntriesDropdown, setShowEntriesDropdown] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Form states
   const [formData, setFormData] = useState({
     nama: "",
@@ -55,7 +55,7 @@ export default function SuperAdminManagementUsersPage() {
     badge: "",
     telp: "",
     departemen: "",
-    role: "admin"
+    role: "admin",
   });
 
   // Entries options
@@ -79,18 +79,18 @@ export default function SuperAdminManagementUsersPage() {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.USERS);
       const result = await response.json();
-      
-      if (result.status === 'success') {
+
+      if (result.status === "success") {
         setUsers(result.users);
       } else {
-        throw new Error('Failed to fetch users');
+        throw new Error("Failed to fetch users");
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to load users',
+        icon: "error",
+        title: "Error",
+        text: "Failed to load users",
       });
     } finally {
       setLoading(false);
@@ -104,9 +104,9 @@ export default function SuperAdminManagementUsersPage() {
   // Handle form input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -139,13 +139,13 @@ export default function SuperAdminManagementUsersPage() {
       const excelData = dataToExport.map((user, index) => ({
         No: index + 1,
         "User ID": user.id,
-        "Name": user.nama || "-",
-        "Email": user.email,
-        "Badge": user.badge || "-",
-        "Phone": user.telp || "-",
-        "Department": user.departemen || "-",
-        "Role": user.role,
-        "Created Date": new Date(user.created_at).toLocaleDateString('en-US')
+        Name: user.nama || "-",
+        Email: user.email,
+        Badge: user.badge || "-",
+        Phone: user.telp || "-",
+        Department: user.departemen || "-",
+        Role: user.role,
+        "Created Date": new Date(user.created_at).toLocaleDateString("en-US"),
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -207,19 +207,26 @@ export default function SuperAdminManagementUsersPage() {
       const excelData = users.map((user, index) => ({
         No: index + 1,
         "User ID": user.id,
-        "Name": user.nama || "-",
-        "Email": user.email,
-        "Badge": user.badge || "-",
-        "Phone": user.telp || "-",
-        "Department": user.departemen || "-",
-        "Role": user.role,
-        "Created Date": new Date(user.created_at).toLocaleDateString('en-US')
+        Name: user.nama || "-",
+        Email: user.email,
+        Badge: user.badge || "-",
+        Phone: user.telp || "-",
+        Department: user.departemen || "-",
+        Role: user.role,
+        "Created Date": new Date(user.created_at).toLocaleDateString("en-US"),
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(excelData);
       const columnWidths = [
-        { wch: 5 }, { wch: 10 }, { wch: 20 }, { wch: 30 }, 
-        { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 15 }, { wch: 15 }
+        { wch: 5 },
+        { wch: 10 },
+        { wch: 20 },
+        { wch: 30 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 15 },
       ];
       worksheet["!cols"] = columnWidths;
 
@@ -254,23 +261,23 @@ export default function SuperAdminManagementUsersPage() {
   // Handle add new user
   const handleAddUser = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch(API_ENDPOINTS.REGISTER, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       const result = await response.json();
 
-      if (result.status === 'success') {
+      if (result.status === "success") {
         Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'User created successfully!',
+          icon: "success",
+          title: "Success",
+          text: "User created successfully!",
         });
         setShowAddModal(false);
         resetForm();
@@ -280,9 +287,9 @@ export default function SuperAdminManagementUsersPage() {
       }
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message || 'Failed to create user',
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to create user",
       });
     }
   };
@@ -290,7 +297,7 @@ export default function SuperAdminManagementUsersPage() {
   // Handle edit user
   const handleEditUser = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedUser) return;
 
     try {
@@ -299,21 +306,24 @@ export default function SuperAdminManagementUsersPage() {
         delete updateData.password;
       }
 
-      const response = await fetch(`${API_ENDPOINTS.USERS}/${selectedUser.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateData),
-      });
+      const response = await fetch(
+        `${API_ENDPOINTS.USERS}/${selectedUser.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateData),
+        }
+      );
 
       const result = await response.json();
 
-      if (result.status === 'success') {
+      if (result.status === "success") {
         Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'User updated successfully!',
+          icon: "success",
+          title: "Success",
+          text: "User updated successfully!",
         });
         setShowEditModal(false);
         resetForm();
@@ -323,9 +333,9 @@ export default function SuperAdminManagementUsersPage() {
       }
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message || 'Failed to update user',
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to update user",
       });
     }
   };
@@ -333,28 +343,28 @@ export default function SuperAdminManagementUsersPage() {
   // Handle delete user
   const handleDeleteUser = async (userId) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
     });
 
     if (result.isConfirmed) {
       try {
         const response = await fetch(`${API_ENDPOINTS.USERS}/${userId}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
 
         const data = await response.json();
 
-        if (data.status === 'success') {
+        if (data.status === "success") {
           Swal.fire({
-            icon: 'success',
-            title: 'Deleted!',
-            text: 'User has been deleted.',
+            icon: "success",
+            title: "Deleted!",
+            text: "User has been deleted.",
           });
           fetchUsers();
         } else {
@@ -362,9 +372,9 @@ export default function SuperAdminManagementUsersPage() {
         }
       } catch (error) {
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: error.message || 'Failed to delete user',
+          icon: "error",
+          title: "Error",
+          text: error.message || "Failed to delete user",
         });
       }
     }
@@ -379,7 +389,7 @@ export default function SuperAdminManagementUsersPage() {
       badge: "",
       telp: "",
       departemen: "",
-      role: "admin"
+      role: "admin",
     });
     setSelectedUser(null);
   };
@@ -394,7 +404,7 @@ export default function SuperAdminManagementUsersPage() {
       badge: user.badge || "",
       telp: user.telp || "",
       departemen: user.departemen || "",
-      role: user.role || "admin"
+      role: user.role || "admin",
     });
     setShowEditModal(true);
   };
@@ -406,11 +416,12 @@ export default function SuperAdminManagementUsersPage() {
   };
 
   // Filter users based on search query
-  const filteredUsers = users.filter(user =>
-    (user.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.badge?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.departemen?.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredUsers = users.filter(
+    (user) =>
+      user.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.badge?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.departemen?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Pagination
@@ -466,8 +477,10 @@ export default function SuperAdminManagementUsersPage() {
               <Users className="w-4 h-4 text-blue-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className={`text-sm font-semibold text-gray-900 truncate ${poppins.className}`}>
-                {user.nama || 'No Name'}
+              <h3
+                className={`text-sm font-semibold text-gray-900 truncate ${poppins.className}`}
+              >
+                {user.nama || "No Name"}
               </h3>
               <p className="text-xs text-gray-500 truncate">{user.email}</p>
             </div>
@@ -491,23 +504,25 @@ export default function SuperAdminManagementUsersPage() {
         <div className="space-y-1.5 text-xs">
           <div className="flex justify-between">
             <span className="text-gray-600">Badge</span>
-            <span className="text-gray-900">{user.badge || '-'}</span>
+            <span className="text-gray-900">{user.badge || "-"}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Phone</span>
-            <span className="text-gray-900">{user.telp || '-'}</span>
+            <span className="text-gray-900">{user.telp || "-"}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Department</span>
-            <span className="text-gray-900">{user.departemen || '-'}</span>
+            <span className="text-gray-900">{user.departemen || "-"}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Role</span>
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-              user.role === 'superadmin' 
-                ? 'bg-purple-500 text-white' 
-                : 'bg-blue-500 text-white'
-            }`}>
+            <span
+              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                user.role === "superadmin"
+                  ? "bg-purple-500 text-white"
+                  : "bg-blue-500 text-white"
+              }`}
+            >
               {user.role}
             </span>
           </div>
@@ -515,7 +530,7 @@ export default function SuperAdminManagementUsersPage() {
 
         <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-200">
           <span className="text-xs text-gray-500">
-            Created: {new Date(user.created_at).toLocaleDateString('en-US')}
+            Created: {new Date(user.created_at).toLocaleDateString("en-US")}
           </span>
           <span className="text-xs text-gray-500">ID: {user.id}</span>
         </div>
@@ -542,7 +557,9 @@ export default function SuperAdminManagementUsersPage() {
           <div className="space-y-3">
             {/* Basic Info */}
             <div className="bg-gray-50 rounded-lg p-3">
-              <h3 className={`font-semibold text-gray-900 mb-2 text-sm ${poppins.className}`}>
+              <h3
+                className={`font-semibold text-gray-900 mb-2 text-sm ${poppins.className}`}
+              >
                 Basic Information
               </h3>
               <div className="space-y-2 text-xs">
@@ -553,7 +570,7 @@ export default function SuperAdminManagementUsersPage() {
                   <div className="flex-1 min-w-0">
                     <label className="text-gray-500 text-xs">Name</label>
                     <p className="font-semibold text-gray-900 truncate">
-                      {user.nama || 'No Name'}
+                      {user.nama || "No Name"}
                     </p>
                   </div>
                 </div>
@@ -565,11 +582,13 @@ export default function SuperAdminManagementUsersPage() {
                 </div>
                 <div className="min-w-0">
                   <label className="text-gray-500 text-xs">Role</label>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                    user.role === 'superadmin' 
-                      ? 'bg-purple-500 text-white' 
-                      : 'bg-blue-500 text-white'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                      user.role === "superadmin"
+                        ? "bg-purple-500 text-white"
+                        : "bg-blue-500 text-white"
+                    }`}
+                  >
                     {user.role}
                   </span>
                 </div>
@@ -582,37 +601,47 @@ export default function SuperAdminManagementUsersPage() {
 
             {/* Contact Info */}
             <div className="bg-gray-50 rounded-lg p-3">
-              <h3 className={`font-semibold text-gray-900 mb-2 text-sm ${poppins.className}`}>
+              <h3
+                className={`font-semibold text-gray-900 mb-2 text-sm ${poppins.className}`}
+              >
                 Contact Information
               </h3>
               <div className="space-y-2 text-xs">
                 <div>
                   <label className="text-gray-500 text-xs">Badge Number</label>
-                  <p className="font-semibold text-gray-900">{user.badge || '-'}</p>
+                  <p className="font-semibold text-gray-900">
+                    {user.badge || "-"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-gray-500 text-xs">Phone</label>
-                  <p className="font-semibold text-gray-900">{user.telp || '-'}</p>
+                  <p className="font-semibold text-gray-900">
+                    {user.telp || "-"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-gray-500 text-xs">Department</label>
-                  <p className="font-semibold text-gray-900">{user.departemen || '-'}</p>
+                  <p className="font-semibold text-gray-900">
+                    {user.departemen || "-"}
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Account Info */}
             <div className="bg-gray-50 rounded-lg p-3">
-              <h3 className={`font-semibold text-gray-900 mb-2 text-sm ${poppins.className}`}>
+              <h3
+                className={`font-semibold text-gray-900 mb-2 text-sm ${poppins.className}`}
+              >
                 Account Information
               </h3>
               <div className="text-xs">
                 <label className="text-gray-500 text-xs">Created Date</label>
                 <p className="font-semibold text-gray-900">
-                  {new Date(user.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(user.created_at).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </p>
               </div>
@@ -713,6 +742,12 @@ export default function SuperAdminManagementUsersPage() {
                 Applications
               </Link>
               <Link
+                href="/superadmin/management_categories"
+                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
+              >
+                Management Categories
+              </Link>
+              <Link
                 href="/superadmin/management_users"
                 className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
               >
@@ -740,7 +775,7 @@ export default function SuperAdminManagementUsersPage() {
             <div className="text-center mt-5">
               {/* Icon + Title */}
               <div className="flex items-center justify-center gap-2">
-                <Users className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" />
+                {/* <Users className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" /> */}
                 <h1 className="text-xl sm:text-2xl font-semibold leading-tight">
                   <span className="text-black">User</span>{" "}
                   <span className="text-black">Management</span>
@@ -866,28 +901,44 @@ export default function SuperAdminManagementUsersPage() {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                        <th className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}>
+                        <th
+                          className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                        >
                           User
                         </th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}>
+                        <th
+                          className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                        >
                           Email
                         </th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}>
+                        <th
+                          className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                        >
                           Badge
                         </th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}>
+                        <th
+                          className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                        >
                           Phone
                         </th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}>
+                        <th
+                          className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                        >
                           Department
                         </th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}>
+                        <th
+                          className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                        >
                           Role
                         </th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}>
+                        <th
+                          className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                        >
                           Created Date
                         </th>
-                        <th className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}>
+                        <th
+                          className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                        >
                           Actions
                         </th>
                       </tr>
@@ -908,7 +959,7 @@ export default function SuperAdminManagementUsersPage() {
                                   onClick={() => setSelectedUser(user)}
                                   className={`text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors text-left group-hover:underline truncate ${poppins.className}`}
                                 >
-                                  {user.nama || 'No Name'}
+                                  {user.nama || "No Name"}
                                 </button>
                                 <span
                                   className={`text-xs text-gray-500 ${poppins.className}`}
@@ -929,29 +980,31 @@ export default function SuperAdminManagementUsersPage() {
                             <span
                               className={`text-sm text-gray-900 ${poppins.className}`}
                             >
-                              {user.badge || '-'}
+                              {user.badge || "-"}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <span
                               className={`text-sm text-gray-900 ${poppins.className}`}
                             >
-                              {user.telp || '-'}
+                              {user.telp || "-"}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <span
                               className={`text-sm text-gray-900 ${poppins.className}`}
                             >
-                              {user.departemen || '-'}
+                              {user.departemen || "-"}
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              user.role === 'superadmin' 
-                                ? 'bg-purple-500 text-white' 
-                                : 'bg-blue-500 text-white'
-                            }`}>
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                user.role === "superadmin"
+                                  ? "bg-purple-500 text-white"
+                                  : "bg-blue-500 text-white"
+                              }`}
+                            >
                               {user.role}
                             </span>
                           </td>
@@ -959,7 +1012,9 @@ export default function SuperAdminManagementUsersPage() {
                             <span
                               className={`text-sm text-gray-900 ${poppins.className}`}
                             >
-                              {new Date(user.created_at).toLocaleDateString('en-US')}
+                              {new Date(user.created_at).toLocaleDateString(
+                                "en-US"
+                              )}
                             </span>
                           </td>
                           <td className="px-4 py-3">
@@ -1007,68 +1062,71 @@ export default function SuperAdminManagementUsersPage() {
                   <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p className="text-lg">No users found</p>
                   <p className="text-sm mt-1">
-                    {searchQuery ? 'Try adjusting your search terms' : 'Get started by adding a new user'}
+                    {searchQuery
+                      ? "Try adjusting your search terms"
+                      : "Get started by adding a new user"}
                   </p>
                 </div>
               )}
 
               {/* Pagination dengan Show Entries */}
-              {(totalPages > 1 || itemsPerPage !== 10) && filteredUsers.length > 0 && (
-                <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    {/* Show Entries dan Info */}
-                    <div className="flex items-center gap-3">
-                      <ShowEntriesDropdown />
-                      <p
-                        className={`text-xs text-gray-700 ${poppins.className}`}
-                      >
-                        Showing{" "}
-                        <span className="font-semibold">
-                          {filteredUsers.length === 0
-                            ? 0
-                            : (currentPage - 1) * itemsPerPage + 1}
-                          -
-                          {Math.min(
-                            currentPage * itemsPerPage,
-                            filteredUsers.length
-                          )}
-                        </span>{" "}
-                        of{" "}
-                        <span className="font-semibold">
-                          {filteredUsers.length}
-                        </span>{" "}
-                        Users
-                      </p>
-                    </div>
-
-                    {/* Pagination Buttons */}
-                    {totalPages > 1 && (
-                      <div className="flex gap-1 justify-center">
-                        <button
-                          onClick={() =>
-                            setCurrentPage((prev) => Math.max(prev - 1, 1))
-                          }
-                          disabled={currentPage === 1}
-                          className={`px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${poppins.className}`}
+              {(totalPages > 1 || itemsPerPage !== 10) &&
+                filteredUsers.length > 0 && (
+                  <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      {/* Show Entries dan Info */}
+                      <div className="flex items-center gap-3">
+                        <ShowEntriesDropdown />
+                        <p
+                          className={`text-xs text-gray-700 ${poppins.className}`}
                         >
-                          ← Prev
-                        </button>
-                        <button
-                          onClick={() =>
-                            setCurrentPage((prev) =>
-                              Math.min(prev + 1, totalPages)
-                            )
-                          }
-                          disabled={currentPage === totalPages}
-                          className={`px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${poppins.className}`}
-                        >
-                          Next →
-                        </button>
+                          Showing{" "}
+                          <span className="font-semibold">
+                            {filteredUsers.length === 0
+                              ? 0
+                              : (currentPage - 1) * itemsPerPage + 1}
+                            -
+                            {Math.min(
+                              currentPage * itemsPerPage,
+                              filteredUsers.length
+                            )}
+                          </span>{" "}
+                          of{" "}
+                          <span className="font-semibold">
+                            {filteredUsers.length}
+                          </span>{" "}
+                          Users
+                        </p>
                       </div>
-                    )}
+
+                      {/* Pagination Buttons */}
+                      {totalPages > 1 && (
+                        <div className="flex gap-1 justify-center">
+                          <button
+                            onClick={() =>
+                              setCurrentPage((prev) => Math.max(prev - 1, 1))
+                            }
+                            disabled={currentPage === 1}
+                            className={`px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${poppins.className}`}
+                          >
+                            ← Prev
+                          </button>
+                          <button
+                            onClick={() =>
+                              setCurrentPage((prev) =>
+                                Math.min(prev + 1, totalPages)
+                              )
+                            }
+                            disabled={currentPage === totalPages}
+                            className={`px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${poppins.className}`}
+                          >
+                            Next →
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           </div>
         </div>
@@ -1255,7 +1313,9 @@ export default function SuperAdminManagementUsersPage() {
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 bg-gray-100"
                     disabled
                   />
-                  <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Email cannot be changed
+                  </p>
                 </div>
 
                 <div>

@@ -21,7 +21,7 @@ import * as LucideIcons from "lucide-react";
 import Swal from "sweetalert2";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useAuth } from "../../context/AuthContext";
-import { API_ENDPOINTS } from "../../../config/api"; 
+import { API_ENDPOINTS } from "../../../config/api";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -72,20 +72,20 @@ export default function SuperAdminDashboardPage() {
     fetchApplications();
   }, []);
 
-const fetchApplications = () => {
-  fetch(API_ENDPOINTS.APPLICATIONS) 
-    .then((res) => res.json())
-    .then((data) => {
-      setAppsList(data);
-      // Group applications by category
-      const grouped = groupAppsByCategory(data);
-      setGroupedApps(grouped);
+  const fetchApplications = () => {
+    fetch(API_ENDPOINTS.APPLICATIONS)
+      .then((res) => res.json())
+      .then((data) => {
+        setAppsList(data);
+        // Group applications by category
+        const grouped = groupAppsByCategory(data);
+        setGroupedApps(grouped);
 
-      // Update dashboard stats
-      updateDashboardStats(data, grouped);
-    })
-    .catch(console.error);
-};
+        // Update dashboard stats
+        updateDashboardStats(data, grouped);
+      })
+      .catch(console.error);
+  };
 
   //Modal Total Apps
   const [showAppsModal, setShowAppsModal] = useState(false);
@@ -138,21 +138,21 @@ const fetchApplications = () => {
       return <GlobeIcon className={className} />;
     }
 
- if (
-    iconName.startsWith("icon-") &&
-    /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
-  ) {
-    return (
-      <img
-        src={getUploadUrl(iconName)} 
-        alt="Application Icon"
-        className={className}
-        onError={(e) => {
-          console.log("Failed to load icon image, using fallback");
-        }}
-      />
-    );
-  }
+    if (
+      iconName.startsWith("icon-") &&
+      /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
+    ) {
+      return (
+        <img
+          src={getUploadUrl(iconName)}
+          alt="Application Icon"
+          className={className}
+          onError={(e) => {
+            console.log("Failed to load icon image, using fallback");
+          }}
+        />
+      );
+    }
 
     const formattedName = iconName
       .replace(/\s+/g, "")
@@ -331,9 +331,9 @@ const fetchApplications = () => {
                   <h3 className="text-2xl font-bold mt-2 group-hover:text-blue-600">
                     {dashboardStats.totalApps}
                   </h3>
-                  <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
+                  {/* <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
                     +{dashboardStats.activeApps} active
-                  </p>
+                  </p> */}
                 </div>
                 <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100">
                   <Globe className="w-6 h-6 group-hover:text-blue-600" />
@@ -375,9 +375,9 @@ const fetchApplications = () => {
                       <h3 className="text-2xl font-bold mt-2 group-hover:text-blue-600">
                         {categoryApps.length}
                       </h3>
-                      <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
+                      {/* <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
                         {activeAppsCount} active
-                      </p>
+                      </p> */}
                     </div>
                     <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100 flex-shrink-0">
                       {categoryIcons[index % categoryIcons.length]}
@@ -469,7 +469,8 @@ const fetchApplications = () => {
                       Active Applications
                     </h2>
                     <p className="text-gray-600 text-sm">
-                      Total {activeApps.length} active applications in this Portal
+                      Total {activeApps.length} active applications in this
+                      Portal
                     </p>
                   </div>
                 </div>

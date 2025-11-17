@@ -298,22 +298,22 @@ export default function ApplicationsPage() {
     }
 
     // Cek jika ini uploaded file
-   if (
-    iconName.startsWith("icon-") &&
-    /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
-  ) {
-    return (
-      <img
-        src={`${API_ENDPOINTS.UPLOADS}/${iconName}`} 
-        alt="Application Icon"
-        className={className}
-        onError={(e) => {
-          console.log("Failed to load icon image");
-          e.target.style.display = 'none';
-        }}
-      />
-    );
-  }
+    if (
+      iconName.startsWith("icon-") &&
+      /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(iconName)
+    ) {
+      return (
+        <img
+          src={`${API_ENDPOINTS.UPLOADS}/${iconName}`}
+          alt="Application Icon"
+          className={className}
+          onError={(e) => {
+            console.log("Failed to load icon image");
+            e.target.style.display = "none";
+          }}
+        />
+      );
+    }
 
     // Gunakan Lucide icon
     const formattedName = iconName
@@ -616,7 +616,7 @@ export default function ApplicationsPage() {
 
               {/* Subtitle */}
               <p className="text-xs sm:text-sm text-gray-500 tracking-widest mt-1">
-                Manage all infrastructure applications in the system
+                All infrastructure applications in the IT Infrastructure Portal
               </p>
             </div>
           </div>
@@ -633,12 +633,12 @@ export default function ApplicationsPage() {
                     <h3
                       className={`text-base font-semibold text-gray-900 ${poppins.className}`}
                     >
-                      Applications List
+                      Applications
                     </h3>
                     <p
                       className={`text-xs text-gray-600 mt-1 ${poppins.className}`}
                     >
-                      Manage all infrastructure applications
+                      All infrastructure applications available in the system
                     </p>
                   </div>
 

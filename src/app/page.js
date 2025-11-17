@@ -29,7 +29,7 @@ export default function LandingPage() {
 
         {/* Right Menu */}
         <div className="hidden md:flex items-center space-x-5">
-          <button className="flex items-center space-x-2 text-white hover:text-gray-200 transition">
+          {/* <button className="flex items-center space-x-2 text-white hover:text-gray-200 transition">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -45,13 +45,13 @@ export default function LandingPage() {
               />
             </svg>
             <span>Search</span>
-          </button>
-          <Link
+          </button> */}
+          {/* <Link
             href="/register"
             className="px-5 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-blue-700 transition font-medium"
           >
             Sign up
-          </Link>
+          </Link> */}
           <Link
             href="/login"
             className="px-5 py-2 bg-white text-blue-700 rounded-lg hover:bg-gray-100 transition font-medium"
@@ -72,7 +72,7 @@ export default function LandingPage() {
       {/* MOBILE MENU OVERLAY */}
       {menuOpen && (
         <div className="fixed inset-0 bg-blue-800/95 text-white flex flex-col items-center justify-center space-y-6 z-30 md:hidden">
-          <Link href="/" onClick={() => setMenuOpen(false)} className="text-lg">
+          {/* <Link href="/" onClick={() => setMenuOpen(false)} className="text-lg">
             Home
           </Link>
           <Link
@@ -81,29 +81,29 @@ export default function LandingPage() {
             className="text-lg"
           >
             IPAM
-          </Link>
-          <Link
+          </Link> */}
+          {/* <Link
             href="/wlc"
             onClick={() => setMenuOpen(false)}
             className="text-lg"
           >
             WLC Controller
-          </Link>
-          <Link
+          </Link> */}
+          {/* <Link
             href="/vmware"
             onClick={() => setMenuOpen(false)}
             className="text-lg"
           >
             VMware
-          </Link>
+          </Link> */}
 
           <div className="flex flex-col space-y-3 w-3/4 pt-6">
-            <Link
+            {/* <Link
               href="/register"
               className="text-center border-2 border-white rounded-lg py-2 hover:bg-white hover:text-blue-700 transition"
             >
               Sign up
-            </Link>
+            </Link> */}
             <Link
               href="/login"
               className="text-center bg-white text-blue-700 rounded-lg py-2 hover:bg-gray-100 font-medium transition"
@@ -148,15 +148,13 @@ export default function LandingPage() {
 
         {/*  FOOTER TEKS POLOS */}
         <footer className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center text-white text-sm opacity-80">
-          IT Infrastructure Dashboard Created by{" "}
+          IT Infrastructure Dashboard{" "}
           <a
             href="https://www.linkedin.com/in/clinton-alfaro/"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-white hover:underline"
-          >
-            @Clinton Alfaro
-          </a>{" "}
+          ></a>{" "}
           •{" "}
           <Link
             href="https://seatrium.com"
