@@ -21,6 +21,7 @@ export default function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -106,51 +107,112 @@ export default function ProfilePage() {
         </div>
 
         {/* HEADER */}
-        <header className="flex flex-col sm:flex-row items-center justify-between px-4 py-4 border-b border-white/50 text-white gap-4 sm:gap-0">
-          <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm hover:text-gray-200 transition"
-            >
-              <Image
-                src="/seatrium.png"
-                alt="Seatrium Logo"
-                width={150}
-                height={150}
-                className="object-contain"
-              />
-            </Link>
-          </div>
+     
+<header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
+  {/* Logo */}
+  <Link href="/" className="flex items-center gap-2">
+    <Image
+      src="/seatrium.png"
+      alt="Seatrium Logo"
+      width={120}
+      height={40}
+      className="object-contain w-28 sm:w-32"
+    />
+  </Link>
 
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
-            <div className="flex items-center gap-4 text-sm text-black font-medium w-full sm:w-auto justify-between sm:justify-start">
-              <Link
-                href="/admin/dashboard"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/admin/applications"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Applications
-              </Link>
-              <Link
-                href="/admin/profile"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Profile
-              </Link>
-              <button
-                onClick={() => setShowLogoutModal(true)}
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </header>
+  {/* Desktop Navigation */}
+  <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium">
+    <Link href="/superadmin/dashboard" className="hover:text-gray-200 transition text-black">
+      Dashboard
+    </Link>
+    <Link href="/superadmin/applications" className="hover:text-gray-200 transition text-black">
+      Applications
+    </Link>
+    <Link href="/superadmin/management_categories" className="hover:text-gray-200 transition text-black">
+      Categories
+    </Link>
+    <Link href="/superadmin/management_users" className="hover:text-gray-200 transition text-black">
+      Users
+    </Link>
+    <Link href="/superadmin/profile" className="hover:text-gray-200 transition text-black">
+      Profile
+    </Link>
+    <button 
+      onClick={() => setShowLogoutModal(true)}
+      className="hover:text-gray-200 transition text-black"
+    >
+      Logout
+    </button>
+  </nav>
+
+  {/* Mobile Menu Button */}
+  <div className="md:hidden">
+    <button
+      onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      className="p-2 text-black hover:bg-white/20 rounded transition"
+    >
+      {isMobileMenuOpen ? (
+        <X className="w-5 h-5" />
+      ) : (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      )}
+    </button>
+  </div>
+
+  {/* Mobile Menu Dropdown */}
+  {isMobileMenuOpen && (
+    <div className="absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-white/20 md:hidden z-50">
+      <div className="flex flex-col p-4 space-y-3">
+        <Link 
+          href="/superadmin/dashboard" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Dashboard
+        </Link>
+        <Link 
+          href="/superadmin/applications" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Applications
+        </Link>
+        <Link 
+          href="/superadmin/management_categories" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+           Categories
+        </Link>
+        <Link 
+          href="/superadmin/management_users" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+           Users
+        </Link>
+        <Link 
+          href="/superadmin/profile" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Profile
+        </Link>
+        <button 
+          onClick={() => {
+            setIsMobileMenuOpen(false);
+            setShowLogoutModal(true);
+          }}
+          className="text-black hover:text-red-600 transition py-2 font-medium text-left"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  )}
+</header>
 
         {/* Profile Form */}
         <div className="max-w-lg w-full mx-auto px-4 py-10">

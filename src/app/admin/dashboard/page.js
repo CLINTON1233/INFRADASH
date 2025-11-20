@@ -35,6 +35,7 @@ export default function SuperAdminDashboardPage() {
   const [showLoginSuccess, setShowLoginSuccess] = useState(false);
   const [appsList, setAppsList] = useState([]);
   const [groupedApps, setGroupedApps] = useState({});
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [dashboardStats, setDashboardStats] = useState({
     totalApps: 0,
     activeApps: 0,
@@ -239,52 +240,137 @@ export default function SuperAdminDashboardPage() {
         )}
 
         {/* HEADER */}
-        <header className="flex flex-col sm:flex-row items-center justify-between px-4 py-4 border-b border-white/50 text-white gap-4 sm:gap-0">
-          <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
+
+        <header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/seatrium.png"
+              alt="Seatrium Logo"
+              width={120}
+              height={40}
+              className="object-contain w-28 sm:w-32"
+            />
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium">
             <Link
-              href="/"
-              className="flex items-center gap-2 text-sm hover:text-gray-200 transition"
+              href="/superadmin/dashboard"
+              className="hover:text-gray-200 transition text-black"
             >
-              <Image
-                src="/seatrium.png"
-                alt="Seatrium Logo"
-                width={150}
-                height={150}
-                className="object-contain"
-              />
+              Dashboard
             </Link>
+            <Link
+              href="/superadmin/applications"
+              className="hover:text-gray-200 transition text-black"
+            >
+              Applications
+            </Link>
+            <Link
+              href="/superadmin/management_categories"
+              className="hover:text-gray-200 transition text-black"
+            >
+              Categories
+            </Link>
+            <Link
+              href="/superadmin/management_users"
+              className="hover:text-gray-200 transition text-black"
+            >
+              Users
+            </Link>
+            <Link
+              href="/superadmin/profile"
+              className="hover:text-gray-200 transition text-black"
+            >
+              Profile
+            </Link>
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className="hover:text-gray-200 transition text-black"
+            >
+              Logout
+            </button>
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-black hover:bg-white/20 rounded transition"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              )}
+            </button>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
-            <div className="flex items-center gap-4 text-sm text-black font-medium w-full sm:w-auto justify-between sm:justify-start">
-              <Link
-                href="/admin/dashboard"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/admin/applications"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Applications
-              </Link>
-              <Link
-                href="/admin/profile"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Profile
-              </Link>
-              <button
-                onClick={() => setShowLogoutModal(true)}
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Logout
-              </button>
+          {/* Mobile Menu Dropdown */}
+          {isMobileMenuOpen && (
+            <div className="absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-white/20 md:hidden z-50">
+              <div className="flex flex-col p-4 space-y-3">
+                <Link
+                  href="/superadmin/dashboard"
+                  className="text-black hover:text-blue-600 transition py-2 font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/superadmin/applications"
+                  className="text-black hover:text-blue-600 transition py-2 font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Applications
+                </Link>
+                <Link
+                  href="/superadmin/management_categories"
+                  className="text-black hover:text-blue-600 transition py-2 font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Categories
+                </Link>
+                <Link
+                  href="/superadmin/management_users"
+                  className="text-black hover:text-blue-600 transition py-2 font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Users
+                </Link>
+                <Link
+                  href="/superadmin/profile"
+                  className="text-black hover:text-blue-600 transition py-2 font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setShowLogoutModal(true);
+                  }}
+                  className="text-black hover:text-red-600 transition py-2 font-medium text-left"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </header>
-
         {/* Hero Section */}
         <section className="max-w-5xl mx-auto text-center py-6 px-4 sm:py-10 sm:px-6">
           <div className="text-center mt-0">
@@ -307,14 +393,12 @@ export default function SuperAdminDashboardPage() {
             className="flex-1 w-full px-4 sm:px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 text-sm sm:text-base"
           />
         </div>
-           {/* DASHBOARD CARDS SECTION */}
+        {/* DASHBOARD CARDS SECTION */}
         <section className="max-w-6xl mx-auto px-6 sm:px-6 mb-6">
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
             {/* Total Applications Card - Warna Ungu */}
-            <div
-              className="bg-purple-600 text-white rounded-2xl p-10 shadow-lg border border-purple-500 transform transition-all duration-300 hover:bg-white hover:text-purple-600 hover:-translate-y-1 group cursor-pointer h-36"
-            >
+            <div className="bg-purple-600 text-white rounded-2xl p-10 shadow-lg border border-purple-500 transform transition-all duration-300 hover:bg-white hover:text-purple-600 hover:-translate-y-1 group cursor-pointer h-36">
               <div className="flex items-center justify-between h-full">
                 <div>
                   <p className="text-purple-100 text-sm font-medium group-hover:text-purple-600">
