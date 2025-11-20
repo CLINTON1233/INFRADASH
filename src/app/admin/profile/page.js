@@ -122,19 +122,14 @@ export default function ProfilePage() {
 
   {/* Desktop Navigation */}
   <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium">
-    <Link href="/superadmin/dashboard" className="hover:text-gray-200 transition text-black">
+    <Link href="/admin/dashboard" className="hover:text-gray-200 transition text-black">
       Dashboard
     </Link>
-    <Link href="/superadmin/applications" className="hover:text-gray-200 transition text-black">
+    <Link href="/admin/applications" className="hover:text-gray-200 transition text-black">
       Applications
     </Link>
-    <Link href="/superadmin/management_categories" className="hover:text-gray-200 transition text-black">
-      Categories
-    </Link>
-    <Link href="/superadmin/management_users" className="hover:text-gray-200 transition text-black">
-      Users
-    </Link>
-    <Link href="/superadmin/profile" className="hover:text-gray-200 transition text-black">
+
+    <Link href="/admin/profile" className="hover:text-gray-200 transition text-black">
       Profile
     </Link>
     <button 
@@ -166,35 +161,22 @@ export default function ProfilePage() {
     <div className="absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-white/20 md:hidden z-50">
       <div className="flex flex-col p-4 space-y-3">
         <Link 
-          href="/superadmin/dashboard" 
+          href="/admin/dashboard" 
           className="text-black hover:text-blue-600 transition py-2 font-medium"
           onClick={() => setIsMobileMenuOpen(false)}
         >
           Dashboard
         </Link>
         <Link 
-          href="/superadmin/applications" 
+          href="/admin/applications" 
           className="text-black hover:text-blue-600 transition py-2 font-medium"
           onClick={() => setIsMobileMenuOpen(false)}
         >
           Applications
         </Link>
+  
         <Link 
-          href="/superadmin/management_categories" 
-          className="text-black hover:text-blue-600 transition py-2 font-medium"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-           Categories
-        </Link>
-        <Link 
-          href="/superadmin/management_users" 
-          className="text-black hover:text-blue-600 transition py-2 font-medium"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-           Users
-        </Link>
-        <Link 
-          href="/superadmin/profile" 
+          href="/admin/profile" 
           className="text-black hover:text-blue-600 transition py-2 font-medium"
           onClick={() => setIsMobileMenuOpen(false)}
         >
