@@ -307,55 +307,34 @@ export default function SuperAdminDashboardPage() {
             className="flex-1 w-full px-4 sm:px-6 py-3 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 placeholder-gray-500 text-sm sm:text-base"
           />
         </div>
-        {/* DASHBOARD CARDS SECTION */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-6">
+           {/* DASHBOARD CARDS SECTION */}
+        <section className="max-w-6xl mx-auto px-6 sm:px-6 mb-6">
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
-            {/* Total Applications Card */}
+            {/* Total Applications Card - Warna Ungu */}
             <div
-              className="bg-blue-600 text-white rounded-2xl p-7 shadow-lg border border-blue-500 transform transition-all duration-300 hover:bg-white hover:text-blue-600 hover:-translate-y-1 group cursor-pointer h-36"
-              onClick={() => {
-                // Filter aplikasi yang aktif
-                const activeAppsList = appsList.filter(
-                  (app) => app.status === "active" || !app.status
-                );
-                setActiveApps(activeAppsList);
-                setShowAppsModal(true);
-              }}
+              className="bg-purple-600 text-white rounded-2xl p-10 shadow-lg border border-purple-500 transform transition-all duration-300 hover:bg-white hover:text-purple-600 hover:-translate-y-1 group cursor-pointer h-36"
             >
               <div className="flex items-center justify-between h-full">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium group-hover:text-blue-600">
+                  <p className="text-purple-100 text-sm font-medium group-hover:text-purple-600">
                     Total Apps
                   </p>
-                  <h3 className="text-2xl font-bold mt-2 group-hover:text-blue-600">
+                  <h3 className="text-2xl font-bold mt-2 group-hover:text-purple-600">
                     {dashboardStats.totalApps}
                   </h3>
-                  {/* <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
-                    +{dashboardStats.activeApps} active
-                  </p> */}
+                  <p className="text-purple-200 text-xs mt-2 group-hover:text-green-600"></p>
                 </div>
-                <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100">
-                  <Globe className="w-6 h-6 group-hover:text-blue-600" />
-                </div>
+                {/* Icon dihilangkan */}
               </div>
             </div>
 
-            {/* Active Categories Cards - Semua biru */}
+            {/* Active Categories Cards - Tanpa Icon */}
             {Object.keys(groupedApps).map((category, index) => {
               const categoryApps = groupedApps[category];
               const activeAppsCount = categoryApps.filter(
                 (app) => app.status === "active" || !app.status
               ).length;
-
-              const categoryIcons = [
-                <Monitor className="w-6 h-6 group-hover:text-blue-600" />,
-                <Wifi className="w-6 h-6 group-hover:text-blue-600" />,
-                <Shield className="w-6 h-6 group-hover:text-blue-600" />,
-                <Users className="w-6 h-6 group-hover:text-blue-600" />,
-                <Globe className="w-6 h-6 group-hover:text-blue-600" />,
-                <Server className="w-6 h-6 group-hover:text-blue-600" />,
-              ];
 
               return (
                 <div
@@ -375,13 +354,9 @@ export default function SuperAdminDashboardPage() {
                       <h3 className="text-2xl font-bold mt-2 group-hover:text-blue-600">
                         {categoryApps.length}
                       </h3>
-                      {/* <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600">
-                        {activeAppsCount} active
-                      </p> */}
+                      <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600"></p>
                     </div>
-                    <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100 flex-shrink-0">
-                      {categoryIcons[index % categoryIcons.length]}
-                    </div>
+                    {/* Icon dihilangkan */}
                   </div>
                 </div>
               );

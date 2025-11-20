@@ -36,6 +36,7 @@ export default function SuperAdminDashboardPage() {
   const [showLoginSuccess, setShowLoginSuccess] = useState(false);
   const [appsList, setAppsList] = useState([]);
   const [groupedApps, setGroupedApps] = useState({});
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [dashboardStats, setDashboardStats] = useState({
     totalApps: 0,
     activeApps: 0,
@@ -51,6 +52,11 @@ export default function SuperAdminDashboardPage() {
     database: "healthy",
     security: "healthy",
   });
+
+  // Modal Category Apps
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryApps, setCategoryApps] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -87,13 +93,6 @@ export default function SuperAdminDashboardPage() {
       })
       .catch(console.error);
   };
-  //Modal Total Apps
-  const [showAppsModal, setShowAppsModal] = useState(false);
-  const [activeApps, setActiveApps] = useState([]);
-  // Modal Category Apps
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categoryApps, setCategoryApps] = useState([]);
 
   const updateDashboardStats = (apps, grouped) => {
     const activeApps = apps.filter(
@@ -237,65 +236,112 @@ export default function SuperAdminDashboardPage() {
           </div>
         )}
 
-        {/* HEADER */}
-        <header className="flex flex-col sm:flex-row items-center justify-between px-4 py-4 border-b border-white/50 text-white gap-4 sm:gap-0">
-          <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm hover:text-gray-200 transition"
-            >
-              <Image
-                src="/seatrium.png"
-                alt="Seatrium Logo"
-                width={150}
-                height={150}
-                className="object-contain"
-              />
-            </Link>
-          </div>
+     
+<header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
+  {/* Logo */}
+  <Link href="/" className="flex items-center gap-2">
+    <Image
+      src="/seatrium.png"
+      alt="Seatrium Logo"
+      width={120}
+      height={40}
+      className="object-contain w-28 sm:w-32"
+    />
+  </Link>
 
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
-            <div className="flex items-center gap-4 text-sm text-black font-medium w-full sm:w-auto justify-between sm:justify-start">
-              <Link
-                href="/superadmin/dashboard"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/superadmin/applications"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Applications
-              </Link>
-              <Link
-                href="/superadmin/management_categories"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Management Categories
-              </Link>
-              <Link
-                href="/superadmin/management_users"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Management Users
-              </Link>
-              <Link
-                href="/superadmin/profile"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Profile
-              </Link>
-              <button
-                onClick={() => setShowLogoutModal(true)}
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </header>
+  {/* Desktop Navigation */}
+  <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium">
+    <Link href="/superadmin/dashboard" className="hover:text-gray-200 transition text-black">
+      Dashboard
+    </Link>
+    <Link href="/superadmin/applications" className="hover:text-gray-200 transition text-black">
+      Applications
+    </Link>
+    <Link href="/superadmin/management_categories" className="hover:text-gray-200 transition text-black">
+      Categories
+    </Link>
+    <Link href="/superadmin/management_users" className="hover:text-gray-200 transition text-black">
+      Users
+    </Link>
+    <Link href="/superadmin/profile" className="hover:text-gray-200 transition text-black">
+      Profile
+    </Link>
+    <button 
+      onClick={() => setShowLogoutModal(true)}
+      className="hover:text-gray-200 transition text-black"
+    >
+      Logout
+    </button>
+  </nav>
 
+  {/* Mobile Menu Button */}
+  <div className="md:hidden">
+    <button
+      onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      className="p-2 text-black hover:bg-white/20 rounded transition"
+    >
+      {isMobileMenuOpen ? (
+        <X className="w-5 h-5" />
+      ) : (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      )}
+    </button>
+  </div>
+
+  {/* Mobile Menu Dropdown */}
+  {isMobileMenuOpen && (
+    <div className="absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-white/20 md:hidden z-50">
+      <div className="flex flex-col p-4 space-y-3">
+        <Link 
+          href="/superadmin/dashboard" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Dashboard
+        </Link>
+        <Link 
+          href="/superadmin/applications" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Applications
+        </Link>
+        <Link 
+          href="/superadmin/management_categories" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+           Categories
+        </Link>
+        <Link 
+          href="/superadmin/management_users" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+           Users
+        </Link>
+        <Link 
+          href="/superadmin/profile" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Profile
+        </Link>
+        <button 
+          onClick={() => {
+            setIsMobileMenuOpen(false);
+            setShowLogoutModal(true);
+          }}
+          className="text-black hover:text-red-600 transition py-2 font-medium text-left"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  )}
+</header>
         {/* Hero Section */}
         <section className="max-w-5xl mx-auto text-center py-6 px-4 sm:py-10 sm:px-6">
           <div className="text-center mt-0">
@@ -319,52 +365,33 @@ export default function SuperAdminDashboardPage() {
           />
         </div>
         {/* DASHBOARD CARDS SECTION */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-6">
+        <section className="max-w-6xl mx-auto px-6 sm:px-6 mb-6">
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
-            {/* Total Applications Card */}
+            {/* Total Applications Card - Warna Ungu */}
             <div
-              className="bg-blue-600 text-white rounded-2xl p-7 shadow-lg border border-blue-500 transform transition-all duration-300 hover:bg-white hover:text-blue-600 hover:-translate-y-1 group cursor-pointer h-36"
-              onClick={() => {
-                // Filter aplikasi yang aktif
-                const activeAppsList = appsList.filter(
-                  (app) => app.status === "active" || !app.status
-                );
-                setActiveApps(activeAppsList);
-                setShowAppsModal(true);
-              }}
+              className="bg-purple-600 text-white rounded-2xl p-10 shadow-lg border border-purple-500 transform transition-all duration-300 hover:bg-white hover:text-purple-600 hover:-translate-y-1 group cursor-pointer h-36"
             >
               <div className="flex items-center justify-between h-full">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium group-hover:text-blue-600">
+                  <p className="text-purple-100 text-sm font-medium group-hover:text-purple-600">
                     Total Apps
                   </p>
-                  <h3 className="text-2xl font-bold mt-2 group-hover:text-blue-600">
+                  <h3 className="text-2xl font-bold mt-2 group-hover:text-purple-600">
                     {dashboardStats.totalApps}
                   </h3>
-                  <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600"></p>
+                  <p className="text-purple-200 text-xs mt-2 group-hover:text-green-600"></p>
                 </div>
-                <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100">
-                  <Globe className="w-6 h-6 group-hover:text-blue-600" />
-                </div>
+                {/* Icon dihilangkan */}
               </div>
             </div>
 
-            {/* Active Categories Cards - Semua biru */}
+            {/* Active Categories Cards - Tanpa Icon */}
             {Object.keys(groupedApps).map((category, index) => {
               const categoryApps = groupedApps[category];
               const activeAppsCount = categoryApps.filter(
                 (app) => app.status === "active" || !app.status
               ).length;
-
-              const categoryIcons = [
-                <Monitor className="w-6 h-6 group-hover:text-blue-600" />,
-                <Wifi className="w-6 h-6 group-hover:text-blue-600" />,
-                <Shield className="w-6 h-6 group-hover:text-blue-600" />,
-                <Users className="w-6 h-6 group-hover:text-blue-600" />,
-                <Globe className="w-6 h-6 group-hover:text-blue-600" />,
-                <Server className="w-6 h-6 group-hover:text-blue-600" />,
-              ];
 
               return (
                 <div
@@ -386,9 +413,7 @@ export default function SuperAdminDashboardPage() {
                       </h3>
                       <p className="text-blue-200 text-xs mt-2 group-hover:text-green-600"></p>
                     </div>
-                    <div className="bg-blue-500 p-3 rounded-xl group-hover:bg-blue-100 flex-shrink-0">
-                      {categoryIcons[index % categoryIcons.length]}
-                    </div>
+                    {/* Icon dihilangkan */}
                   </div>
                 </div>
               );
@@ -460,110 +485,6 @@ export default function SuperAdminDashboardPage() {
             ))
           )}
         </section>
-
-        {/* Active Applications Modal */}
-        {showAppsModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-6 sm:p-8 w-full max-w-4xl max-h-[80vh] overflow-hidden flex flex-col animate-fade-in">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="bg-blue-500 p-2 rounded-lg">
-                    <Globe className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-semibold text-gray-800">
-                      Active Applications
-                    </h2>
-                    <p className="text-gray-600 text-sm">
-                      Total {activeApps.length} active applications in this
-                      Portal
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowAppsModal(false)}
-                  className="p-2 hover:bg-gray-200 rounded-full transition"
-                >
-                  <X className="w-6 h-6 text-gray-600" />
-                </button>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 overflow-y-auto">
-                {activeApps.length === 0 ? (
-                  <div className="text-center py-10">
-                    <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 text-lg">
-                      No active applications found
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {activeApps.map((app, index) => (
-                      <div
-                        key={index}
-                        className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow duration-300"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0">
-                            <AppIcon
-                              iconName={app.icon}
-                              className="w-10 h-10 text-blue-600"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-800 truncate">
-                              {app.title}
-                            </h3>
-                            <p className="text-gray-600 text-sm truncate">
-                              {app.fullName}
-                            </p>
-                            <div className="flex items-center gap-2 mt-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-xs text-green-600 font-medium">
-                                Active
-                              </span>
-                            </div>
-                            {app.category && (
-                              <div className="mt-2">
-                                <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                                  {app.category.name}
-                                </span>
-                              </div>
-                            )}
-                            {app.url && (
-                              <button
-                                onClick={() => window.open(app.url, "_blank")}
-                                className="mt-3 text-xs bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
-                              >
-                                Open App
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Footer  Total Apps*/}
-              <div className="flex justify-between items-center pt-6 mt-4 border-t border-gray-200">
-                <div className="text-sm text-gray-600">
-                  Showing {activeApps.length} of {dashboardStats.totalApps}{" "}
-                  applications
-                </div>
-                <button
-                  onClick={() => setShowAppsModal(false)}
-                  className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Category Applications Modal */}
         {showCategoryModal && (

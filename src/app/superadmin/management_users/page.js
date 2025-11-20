@@ -46,6 +46,7 @@ export default function SuperAdminManagementUsersPage() {
   const [showEntriesDropdown, setShowEntriesDropdown] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -696,79 +697,111 @@ export default function SuperAdminManagementUsersPage() {
         )}
 
         {/* HEADER - Mobile Optimized */}
-        <header className="flex flex-col sm:flex-row items-center justify-between px-3 py-3 border-b border-white/50 text-white gap-3 sm:gap-0">
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm hover:text-gray-200 transition flex-shrink-0"
-            >
-              <Image
-                src="/seatrium.png"
-                alt="Seatrium Logo"
-                width={150}
-                height={150}
-                className="object-contain"
-              />
-            </Link>
+<header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
+  {/* Logo */}
+  <Link href="/" className="flex items-center gap-2">
+    <Image
+      src="/seatrium.png"
+      alt="Seatrium Logo"
+      width={120}
+      height={40}
+      className="object-contain w-28 sm:w-32"
+    />
+  </Link>
 
-            {/* Mobile Menu Button */}
-            {isMobile && (
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="p-1 text-white hover:text-gray-200 transition"
-              >
-                <MoreVertical className="w-5 h-5" />
-              </button>
-            )}
-          </div>
+  {/* Desktop Navigation */}
+  <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium">
+    <Link href="/superadmin/dashboard" className="hover:text-gray-200 transition text-black">
+      Dashboard
+    </Link>
+    <Link href="/superadmin/applications" className="hover:text-gray-200 transition text-black">
+      Applications
+    </Link>
+    <Link href="/superadmin/management_categories" className="hover:text-gray-200 transition text-black">
+      Categories
+    </Link>
+    <Link href="/superadmin/management_users" className="hover:text-gray-200 transition text-black">
+      Users
+    </Link>
+    <Link href="/superadmin/profile" className="hover:text-gray-200 transition text-black">
+      Profile
+    </Link>
+    <button 
+      onClick={() => setShowLogoutModal(true)}
+      className="hover:text-gray-200 transition text-black"
+    >
+      Logout
+    </button>
+  </nav>
 
-          {/* Navigation - Mobile Collapsible */}
-          <div
-            className={`${
-              isMobile && !showFilters ? "hidden" : "flex"
-            } flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto`}
-          >
-            <div className="flex items-center gap-3 text-sm text-black font-medium w-full sm:w-auto justify-between sm:justify-start flex-wrap">
-              <Link
-                href="/superadmin/dashboard"
-                className="hover:text-gray-200 transition px-2 py-1 rounded text-center text-xs sm:text-sm"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/superadmin/applications"
-                className="hover:text-gray-200 transition px-2 py-1 rounded text-center text-xs sm:text-sm"
-              >
-                Applications
-              </Link>
-              <Link
-                href="/superadmin/management_categories"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Management Categories
-              </Link>
-              <Link
-                href="/superadmin/management_users"
-                className="hover:text-gray-200 transition w-full sm:w-auto text-center sm:text-left"
-              >
-                Management Users
-              </Link>
-              <Link
-                href="/superadmin/profile"
-                className="hover:text-gray-200 transition px-2 py-1 rounded text-center text-xs sm:text-sm"
-              >
-                Profile
-              </Link>
-              <button
-                onClick={() => setShowLogoutModal(true)}
-                className="hover:text-gray-200 transition px-2 py-1 rounded text-center text-xs sm:text-sm"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </header>
+  {/* Mobile Menu Button */}
+  <div className="md:hidden">
+    <button
+      onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      className="p-2 text-black hover:bg-white/20 rounded transition"
+    >
+      {isMobileMenuOpen ? (
+        <X className="w-5 h-5" />
+      ) : (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      )}
+    </button>
+  </div>
 
+  {/* Mobile Menu Dropdown */}
+  {isMobileMenuOpen && (
+    <div className="absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-white/20 md:hidden z-50">
+      <div className="flex flex-col p-4 space-y-3">
+        <Link 
+          href="/superadmin/dashboard" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Dashboard
+        </Link>
+        <Link 
+          href="/superadmin/applications" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Applications
+        </Link>
+        <Link 
+          href="/superadmin/management_categories" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+           Categories
+        </Link>
+        <Link 
+          href="/superadmin/management_users" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+           Users
+        </Link>
+        <Link 
+          href="/superadmin/profile" 
+          className="text-black hover:text-blue-600 transition py-2 font-medium"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Profile
+        </Link>
+        <button 
+          onClick={() => {
+            setIsMobileMenuOpen(false);
+            setShowLogoutModal(true);
+          }}
+          className="text-black hover:text-red-600 transition py-2 font-medium text-left"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  )}
+</header>
         {/* Hero Section - Mobile Optimized */}
         <section className="max-w-5xl mx-auto text-center py-3 px-3 sm:px-6">
           <div className="text-center">
