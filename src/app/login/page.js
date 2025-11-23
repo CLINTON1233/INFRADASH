@@ -25,8 +25,8 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  try {
-      const res = await fetch(API_ENDPOINTS.LOGIN, { 
+    try {
+      const res = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -37,6 +37,32 @@ export default function LoginPage() {
 
       if (data.status === "success") {
         const user = data.user;
+
+        // Generate token untuk WebSSH
+        const tokenResponse = await fetch(
+          "http://localhost:4000/users/generate-token",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          }
+        );
+
+        const tokenData = await tokenResponse.json();
+
+        if (tokenData.status === "success") {
+          localStorage.setItem("ssh_token", tokenData.token);
+        }
+
+        // Check jika ada redirect parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get("redirect");
+
+        if (redirect === "ssh") {
+          // Redirect ke WebSSH dengan token
+          window.location.href = `http://localhost:3001?token=${tokenData.token}`;
+          return;
+        }
 
         // Simpan user dan login
         login({
@@ -118,8 +144,6 @@ export default function LoginPage() {
             />
           </Link>
         </div>
-
-   
       </div>
       {/* Main Content */}
       <div className="max-w-lg w-full mx-auto px-4 py-10">
@@ -198,15 +222,10 @@ export default function LoginPage() {
               Reset here
             </Link>
           </p> */}
-
-         
         </form>
       </div>
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
-        <p>
-          IT Infrastructure Dashboard{" "}
-       
-        </p>
+        <p>IT Infrastructure Dashboard </p>
         <Link
           href="https://seatrium.com"
           target="_blank"
