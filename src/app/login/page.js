@@ -38,32 +38,6 @@ export default function LoginPage() {
       if (data.status === "success") {
         const user = data.user;
 
-        // Generate token untuk WebSSH
-        const tokenResponse = await fetch(
-          "http://localhost:4000/users/generate-token",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          }
-        );
-
-        const tokenData = await tokenResponse.json();
-
-        if (tokenData.status === "success") {
-          localStorage.setItem("ssh_token", tokenData.token);
-        }
-
-        // Check jika ada redirect parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const redirect = urlParams.get("redirect");
-
-        if (redirect === "ssh") {
-          // Redirect ke WebSSH dengan token
-          window.location.href = `http://localhost:3001?token=${tokenData.token}`;
-          return;
-        }
-
         // Simpan user dan login
         login({
           id: user.id,
@@ -116,7 +90,7 @@ export default function LoginPage() {
 
   return (
     <div className={`relative min-h-screen flex flex-col ${poppins.className}`}>
-      {/* 🌊 BACKGROUND */}
+      {/*  BACKGROUND */}
       <div className="absolute inset-0 -z-10">
         <Image
           src="/bg_seatrium 3.png"
@@ -138,92 +112,78 @@ export default function LoginPage() {
             <Image
               src="/seatrium.png"
               alt="Seatrium Logo"
-              width={150}
-              height={150}
+              width={160}
+              height={160}
               className="object-contain"
             />
           </Link>
         </div>
       </div>
       {/* Main Content */}
-      <div className="max-w-lg w-full mx-auto px-4 py-10">
-        {/* Title di atas form */}
-        <div className="flex flex-col items-center mb-6 text-center text-white">
-          <h1 className="text-3xl font-bold mb-0">Welcome Back!</h1>
-          <p className="text-base opacity-90">Log in to access your account</p>
-        </div>
+     <div className="max-w-xl w-full mx-auto px-4 py-38">
+  {/* Title di atas form */}
+  <div className="flex flex-col items-center mb-6 text-center text-white">
+    <h1 className="text-4xl font-bold mb-0">Welcome Back!</h1>
+    <p className="text-lg opacity-90">Log in to access your account</p>
+  </div>
 
-        {/* Login Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-3 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-lg mt-6"
+  {/* Login Form */}
+  <form
+    onSubmit={handleSubmit}
+    className="space-y-4 bg-white/90 backdrop-blur-md p-10 rounded-2xl shadow-lg mt-8"
+  >
+    {/* Title di dalam form */}
+    <div className="flex flex-col items-center mb-8 text-center text-black">
+      <h3 className="text-4xl font-bold mb-3">Log In</h3>
+    </div>
+
+    {/* Email */}
+    <div>
+      <label className="block text-lg text-gray-700 mb-2">
+        Email address
+      </label>
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+        className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      />
+    </div>
+
+    {/* Password */}
+    <div>
+      <div className="flex justify-between items-center mb-2">
+        <label className="text-lg text-gray-700">Password</label>
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="text-sm text-blue-600 hover:underline"
         >
-          {/* Title di dalam form */}
-          <div className="flex flex-col items-center mb-6 text-center text-black">
-            <h3 className="text-3xl font-bold mb-1">Log in</h3>
-          </div>
-
-          {/* Email */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-base text-gray-700 mb-2"
-            >
-              Email address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-5 py-3 border border-gray-300 rounded-md text-base text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label htmlFor="password" className="text-base text-gray-700">
-                Password
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-sm text-blue-600 hover:underline"
-              >
-                {showPassword ? "Hide" : "Show"}
-              </button>
-            </div>
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-5 py-3 border border-gray-300 rounded-md text-base text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-blue-800 text-white rounded-full py-3 text-base font-medium hover:bg-blue-900 transition"
-          >
-            Log in
-          </button>
-
-          {/* Forgot Password */}
-          {/* <p className="text-sm text-gray-700 text-center mt-1">
-            Forgot your password?{" "}
-            <Link href="/forgot-password" className="underline text-blue-600">
-              Reset here
-            </Link>
-          </p> */}
-        </form>
+          {showPassword ? "Hide" : "Show"}
+        </button>
       </div>
+      <input
+        type={showPassword ? "text" : "password"}
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        required
+        className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      />
+    </div>
+
+    {/* Submit */}
+    <button
+      type="submit"
+      className="w-full bg-blue-800 text-white rounded-full py-4 text-lg font-semibold hover:bg-blue-900 transition"
+    >
+      Log in
+    </button>
+  </form>
+</div>
+
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
         <p>IT Infrastructure Dashboard </p>
         <Link

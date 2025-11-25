@@ -22,7 +22,6 @@ import Swal from "sweetalert2";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useAuth } from "../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../config/api";
-
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -52,11 +51,6 @@ export default function SuperAdminDashboardPage() {
     database: "healthy",
     security: "healthy",
   });
-
-  // Modal Category Apps
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categoryApps, setCategoryApps] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -93,6 +87,14 @@ export default function SuperAdminDashboardPage() {
       })
       .catch(console.error);
   };
+
+  //Modal Total Apps
+  const [showAppsModal, setShowAppsModal] = useState(false);
+  const [activeApps, setActiveApps] = useState([]);
+  // Modal Category Apps
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryApps, setCategoryApps] = useState([]);
 
   const updateDashboardStats = (apps, grouped) => {
     const activeApps = apps.filter(
@@ -143,7 +145,7 @@ export default function SuperAdminDashboardPage() {
     ) {
       return (
         <img
-          src={getUploadUrl(iconName)} // Gunakan helper function
+          src={getUploadUrl(iconName)}
           alt="Application Icon"
           className={className}
           onError={(e) => {
@@ -152,6 +154,7 @@ export default function SuperAdminDashboardPage() {
         />
       );
     }
+
     const formattedName = iconName
       .replace(/\s+/g, "")
       .replace(/-/g, "")
@@ -213,7 +216,7 @@ export default function SuperAdminDashboardPage() {
   };
 
   return (
-    <ProtectedRoute requiredRole="superadmin">
+    <ProtectedRoute requiredRole="admin">
       <div
         className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}
       >
@@ -235,6 +238,8 @@ export default function SuperAdminDashboardPage() {
             <span className="text-sm font-medium">Login successfully!</span>
           </div>
         )}
+
+        {/* HEADER */}
 
         <header className="flex items-center justify-between px-4 py-4 border-b border-white/50 text-white">
           {/* Logo */}
@@ -508,6 +513,110 @@ export default function SuperAdminDashboardPage() {
           )}
         </section>
 
+        {/* Active Applications Modal */}
+        {showAppsModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl p-6 sm:p-8 w-full max-w-4xl max-h-[80vh] overflow-hidden flex flex-col animate-fade-in">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-500 p-2 rounded-lg">
+                    <Globe className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                      Active Applications
+                    </h2>
+                    <p className="text-gray-600 text-sm">
+                      Total {activeApps.length} active applications in this
+                      Portal
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowAppsModal(false)}
+                  className="p-2 hover:bg-gray-200 rounded-full transition"
+                >
+                  <X className="w-6 h-6 text-gray-600" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto">
+                {activeApps.length === 0 ? (
+                  <div className="text-center py-10">
+                    <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 text-lg">
+                      No active applications found
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {activeApps.map((app, index) => (
+                      <div
+                        key={index}
+                        className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow duration-300"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0">
+                            <AppIcon
+                              iconName={app.icon}
+                              className="w-10 h-10 text-blue-600"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-800 truncate">
+                              {app.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm truncate">
+                              {app.fullName}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span className="text-xs text-green-600 font-medium">
+                                Active
+                              </span>
+                            </div>
+                            {app.category && (
+                              <div className="mt-2">
+                                <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                  {app.category.name}
+                                </span>
+                              </div>
+                            )}
+                            {app.url && (
+                              <button
+                                onClick={() => window.open(app.url, "_blank")}
+                                className="mt-3 text-xs bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
+                              >
+                                Open App
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer  Total Apps*/}
+              <div className="flex justify-between items-center pt-6 mt-4 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Showing {activeApps.length} of {dashboardStats.totalApps}{" "}
+                  applications
+                </div>
+                <button
+                  onClick={() => setShowAppsModal(false)}
+                  className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Category Applications Modal */}
         {showCategoryModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
@@ -664,7 +773,7 @@ export default function SuperAdminDashboardPage() {
 
         {/* Footer */}
         <footer className="mt-auto py-4 text-center text-white text-xs sm:text-sm space-y-1 border-t border-white/30 px-4 sm:px-6">
-          <p>IT Infrastructure Dashboard</p>
+          <p>IT Infrastructure Dashboard </p>
           <p>seatrium.com</p>
         </footer>
       </div>

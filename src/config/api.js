@@ -23,6 +23,10 @@ export const API_ENDPOINTS = {
 
   // Uploads
   UPLOADS: `${API_BASE_URL}/uploads`,
+
+  // WebSSH
+   VERIFY_SESSION: 'http://localhost:4000/users/verify-session',
+  GENERATE_WEBSSH_TOKEN: 'http://localhost:4000/users/generate-webssh-token'
 };
 
 // Helper function untuk build upload URL
