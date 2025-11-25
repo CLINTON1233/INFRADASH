@@ -120,69 +120,69 @@ export default function LoginPage() {
         </div>
       </div>
       {/* Main Content */}
-     <div className="max-w-xl w-full mx-auto px-4 py-38">
-  {/* Title di atas form */}
-  <div className="flex flex-col items-center mb-6 text-center text-white">
-    <h1 className="text-4xl font-bold mb-0">Welcome Back!</h1>
-    <p className="text-lg opacity-90">Log in to access your account</p>
-  </div>
+      <div className="max-w-xl w-full mx-auto px-4 py-38">
+        {/* Title di atas form */}
+        <div className="flex flex-col items-center mb-6 text-center text-white">
+          <h1 className="text-4xl font-bold mb-0">Welcome Back!</h1>
+          <p className="text-lg opacity-90">Log in to access your account</p>
+        </div>
 
-  {/* Login Form */}
-  <form
-    onSubmit={handleSubmit}
-    className="space-y-4 bg-white/90 backdrop-blur-md p-10 rounded-2xl shadow-lg mt-8"
-  >
-    {/* Title di dalam form */}
-    <div className="flex flex-col items-center mb-8 text-center text-black">
-      <h3 className="text-4xl font-bold mb-3">Log In</h3>
-    </div>
-
-    {/* Email */}
-    <div>
-      <label className="block text-lg text-gray-700 mb-2">
-        Email address
-      </label>
-      <input
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        required
-        className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      />
-    </div>
-
-    {/* Password */}
-    <div>
-      <div className="flex justify-between items-center mb-2">
-        <label className="text-lg text-gray-700">Password</label>
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="text-sm text-blue-600 hover:underline"
+        {/* Login Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 bg-white/90 backdrop-blur-md p-10 rounded-2xl shadow-lg mt-8"
         >
-          {showPassword ? "Hide" : "Show"}
-        </button>
-      </div>
-      <input
-        type={showPassword ? "text" : "password"}
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-        className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      />
-    </div>
+          {/* Title di dalam form */}
+          <div className="flex flex-col items-center mb-8 text-center text-black">
+            <h3 className="text-4xl font-bold mb-3">Log In</h3>
+          </div>
 
-    {/* Submit */}
-    <button
-      type="submit"
-      className="w-full bg-blue-800 text-white rounded-full py-4 text-lg font-semibold hover:bg-blue-900 transition"
-    >
-      Log in
-    </button>
-  </form>
-</div>
+          {/* Email */}
+          <div>
+            <label className="block text-lg text-gray-700 mb-2">
+              Email address
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-lg text-gray-700">Password</label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full px-6 py-4 border border-gray-300 rounded-md text-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full bg-blue-800 text-white rounded-full py-4 text-lg font-semibold hover:bg-blue-900 transition"
+          >
+            Log in
+          </button>
+        </form>
+      </div>
 
       <footer className="mt-auto py-4 text-center text-white text-xs md:text-sm space-y-1 border-t border-white/30">
         <p>IT Infrastructure Dashboard </p>
