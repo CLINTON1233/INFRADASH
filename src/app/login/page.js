@@ -36,10 +36,9 @@ export default function LoginPage() {
       console.log(data);
 
       if (data.status === "success") {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.token); // Simpan di localStorage
         const user = data.user;
 
-        // Simpan user dan login
         login({
           id: user.id,
           nama: user.nama,
@@ -48,7 +47,7 @@ export default function LoginPage() {
           telp: user.telp || "",
           departemen: user.departemen || "",
           role: user.role,
-          token: data.token
+          token: data.token, // Juga simpan di user object
         });
 
         await Swal.fire({

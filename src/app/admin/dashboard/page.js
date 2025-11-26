@@ -267,7 +267,7 @@ export default function AdminDashboardPage() {
             >
               Applications
             </Link>
-        
+
             <Link
               href="/admin/profile"
               className="hover:text-gray-200 transition text-black"
@@ -326,7 +326,7 @@ export default function AdminDashboardPage() {
                 >
                   Applications
                 </Link>
-           
+
                 <Link
                   href="/admin/profile"
                   className="text-black hover:text-blue-600 transition py-2 font-medium"
@@ -475,10 +475,33 @@ export default function AdminDashboardPage() {
                       </div>
 
                       {/* Click area for card navigation */}
-                      <div
+                      {/* <div
                         className="absolute inset-0 z-0 cursor-pointer"
                         onClick={() => {
                           window.open(app.url, "_blank");
+                        }}
+                      /> */}
+
+                      <div
+                        className="absolute inset-0 z-0 cursor-pointer"
+                        onClick={() => {
+                          const token = localStorage.getItem("token");
+                          const user = localStorage.getItem("user");
+
+                          // Jika URL adalah WebSSH, kirim token via query parameter
+                          if (
+                            app.url.includes("localhost:3001") ||
+                            app.url.includes("webssh")
+                          ) {
+                            const urlWithToken = `${app.url}${
+                              app.url.includes("?") ? "&" : "?"
+                            }token=${encodeURIComponent(
+                              token || ""
+                            )}&user=${encodeURIComponent(user || "")}`;
+                            window.open(urlWithToken, "_blank");
+                          } else {
+                            window.open(app.url, "_blank");
+                          }
                         }}
                       />
                     </div>
