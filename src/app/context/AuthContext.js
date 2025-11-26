@@ -97,69 +97,12 @@ export function AuthProvider({ children }) {
     
   };
 
-  // const logout = () => {
-  //   setUser(null);
-  //   localStorage.removeItem('user');
-  //   sessionStorage.removeItem('loginSuccessShown');
-  //   router.push('/login');
-  // };
-
-// const logout = () => {
-//   setUser(null);
-//   localStorage.removeItem('user');
-//   sessionStorage.removeItem('loginSuccessShown');
-
-//   // Hapus cookie di SEMUA domain & port yang relevan
-//   const domains = [
-//     '',                    // current domain
-//     'localhost',
-//     '127.0.0.1',
-//     'localhost:3000',
-//     'localhost:3001',
-//     '127.0.0.1:3000',
-//     '127.0.0.1:3001',
-//   ];
-
-//   domains.forEach(domain => {
-//     document.cookie = `portal_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${domain};`;
-//     document.cookie = `portal_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${domain}; Secure;`;
-//     document.cookie = `portal_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${domain}; SameSite=None; Secure;`;
-//   });
-
-//   // Force clear dari semua subdomain
-//   document.cookie = 'portal_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
-  
-//   router.push('/login');
-// };
-
-const logout = async () => {
-  setUser(null);
-  localStorage.removeItem('user');
-  sessionStorage.removeItem('loginSuccessShown');
-
-  // Hapus cookie di SEMUA port yang relevan (3000, 3001, 4000)
-  const ports = [3000, 3001, 4000];
-  const baseUrl = window.location.origin.split(':').slice(0, 2).join(':'); // http://localhost
-
-  ports.forEach(port => {
-    // Hapus cookie dengan meng-set expired di masa lalu
-    document.cookie = `portal_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=localhost; port=${port}`;
-    document.cookie = `portal_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=localhost`;
-    document.cookie = `portal_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
-  });
-
-  // Tetap panggil backend logout (untuk clear di server juga)
-  try {
-    await fetch('http://localhost:4000/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-  } catch (err) {
-    console.error('Logout backend gagal:', err);
-  }
-
-  router.push('/login');
-};
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('loginSuccessShown');
+    router.push('/login');
+  };
 
   const value = {
     user,
