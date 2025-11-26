@@ -36,6 +36,7 @@ export default function LoginPage() {
       console.log(data);
 
       if (data.status === "success") {
+        localStorage.setItem("token", data.token);
         const user = data.user;
 
         // Simpan user dan login
@@ -47,6 +48,7 @@ export default function LoginPage() {
           telp: user.telp || "",
           departemen: user.departemen || "",
           role: user.role,
+          token: data.token
         });
 
         await Swal.fire({

@@ -22,19 +22,30 @@ export function AuthProvider({ children }) {
     }
   }, [pathname, loading]);
 
-  const checkAuth = () => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+const checkAuth = () => {
+  try {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+
+    if (storedUser) {
+      const userObj = JSON.parse(storedUser);
+
+      // jika token ada, tambahkan ke user
+      if (storedToken) {
+        userObj.token = storedToken;
       }
-    } catch (error) {
-      console.error('Error checking auth:', error);
-      logout();
-    } finally {
-      setLoading(false);
+
+      setUser(userObj);
     }
-  };
+  } catch (error) {
+  console.error('Error checking auth:', error);
+  setUser(null);  
+
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const checkRouteAccess = () => {
     // Routes yang boleh diakses tanpa login
@@ -90,12 +101,12 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+const login = (userData) => {
+  setUser(userData);
 
-    
-  };
+  localStorage.setItem("user", JSON.stringify(userData));
+  localStorage.setItem("token", userData.token);
+};
 
   const logout = () => {
     setUser(null);
