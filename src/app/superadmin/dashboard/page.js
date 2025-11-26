@@ -45,6 +45,8 @@ export default function SuperAdminDashboardPage() {
     servers: 12,
     users: 45,
   });
+
+  
   const [systemStatus, setSystemStatus] = useState({
     servers: "healthy",
     network: "degraded",
@@ -184,6 +186,17 @@ export default function SuperAdminDashboardPage() {
     },
     {}
   );
+const handleAppClick = (app) => {
+  if (
+    app.title?.toLowerCase() === "webssh" ||
+    app.fullName?.toLowerCase().includes("webssh")
+  ) {
+    window.open("http://localhost:3001", "_blank", "noopener,noreferrer");
+  } else if (app.url) {
+    window.open(app.url, "_blank", "noopener,noreferrer");
+  }
+};
+
 
   const handleLogout = () => {
     logout();
