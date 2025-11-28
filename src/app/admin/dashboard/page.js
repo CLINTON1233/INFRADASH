@@ -674,7 +674,7 @@ export default function AdminDashboardPage() {
                               {app.fullName}
                             </p>
                             <div className="flex items-center gap-2 mt-2">
-                              <div
+                              {/* <div
                                 className={`w-2 h-2 rounded-full ${
                                   app.status === "active" || !app.status
                                     ? "bg-green-500"
@@ -691,7 +691,7 @@ export default function AdminDashboardPage() {
                                 {app.status === "active" || !app.status
                                   ? "Active"
                                   : "Inactive"}
-                              </span>
+                              </span> */}
                             </div>
                             {app.description && (
                               <p className="text-gray-500 text-xs mt-2 line-clamp-2">
