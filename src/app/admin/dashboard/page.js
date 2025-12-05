@@ -504,6 +504,30 @@ export default function AdminDashboardPage() {
                           }
                         }}
                       />
+
+                      <div
+                        className="absolute inset-0 z-0 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          const token = localStorage.getItem("token");
+                          const user = localStorage.getItem("user");
+
+                          if (!token || !user) {
+                            alert("Session expired. Please login again.");
+                            return;
+                          }
+
+                          // Build URL untuk AppsSMOE dengan token
+                          const appsMoeUrl = `http://localhost:3002/?token=${encodeURIComponent(
+                            token
+                          )}&user=${encodeURIComponent(user)}`;
+
+                          // Open in new tab
+                          window.open(appsMoeUrl, "_blank");
+                        }}
+                      />
                     </div>
                   ))}
                 </div>
