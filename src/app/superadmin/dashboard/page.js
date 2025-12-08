@@ -216,7 +216,7 @@ export default function SuperAdminDashboardPage() {
   };
 
   return (
-    <ProtectedRoute requiredRole="admin">
+    <ProtectedRoute requiredRole="superadmin">
       <div
         className={`relative min-h-screen flex flex-col text-white ${poppins.className}`}
       >
@@ -528,7 +528,7 @@ export default function SuperAdminDashboardPage() {
                         }}
                       />
 
-                      <div
+                       <div
                         className="absolute inset-0 z-0 cursor-pointer"
                         onClick={(e) => {
                           e.preventDefault();
