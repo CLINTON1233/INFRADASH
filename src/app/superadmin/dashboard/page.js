@@ -482,8 +482,8 @@ export default function SuperAdminDashboardPage() {
                     <div
                       key={index}
                       className="relative cursor-pointer bg-blue-600 text-white p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-lg
-         transform transition-all duration-300 hover:bg-white hover:text-blue-600
-         hover:-translate-y-1 h-[140px] sm:h-[160px] flex flex-col justify-center items-center text-center group"
+      transform transition-all duration-300 hover:bg-white hover:text-blue-600
+      hover:-translate-y-1 h-[140px] sm:h-[160px] flex flex-col justify-center items-center text-center group"
                     >
                       <div className="flex justify-center mb-2 sm:mb-3">
                         <AppIcon
@@ -498,57 +498,42 @@ export default function SuperAdminDashboardPage() {
                         {app.fullName}
                       </div>
 
-                      {/* Click area for card navigation */}
-                      {/* <div
-                        className="absolute inset-0 z-0 cursor-pointer"
-                        onClick={() => {
-                          window.open(app.url, "_blank");
-                        }}
-                      /> */}
+                      {/* HANYA SATU CLICK HANDLER - PERIKSA APAKAH INI APPSSMOE ATAU BUKAN */}
                       <div
                         className="absolute inset-0 z-0 cursor-pointer"
                         onClick={() => {
                           const token = localStorage.getItem("token");
                           const user = localStorage.getItem("user");
 
-                          // Jika URL adalah WebSSH, kirim token via query parameter
-                          if (
-                            app.url.includes("localhost:3001") ||
-                            app.url.includes("webssh")
-                          ) {
-                            const urlWithToken = `${app.url}${
-                              app.url.includes("?") ? "&" : "?"
-                            }token=${encodeURIComponent(
-                              token || ""
-                            )}&user=${encodeURIComponent(user || "")}`;
-                            window.open(urlWithToken, "_blank");
+                          // Cek apakah ini adalah aplikasi AppsSMOE atau bukan
+                          const isAppsSMOE =
+                            app.title.toLowerCase().includes("appssmoe") ||
+                            app.fullName.toLowerCase().includes("appssmoe") ||
+                            app.url.includes("localhost:3002");
+
+                          if (isAppsSMOE) {
+                            // Jika ini AppsSMOE, kirim token dan user data
+                            const appsMoeUrl = `http://localhost:3002/?token=${encodeURIComponent(
+                              token
+                            )}&user=${encodeURIComponent(user)}`;
+                            window.open(appsMoeUrl, "_blank");
                           } else {
-                            window.open(app.url, "_blank");
+                            // Jika ini WebSSH, kirim token via query parameter
+                            if (
+                              app.url.includes("localhost:3001") ||
+                              app.url.includes("webssh")
+                            ) {
+                              const urlWithToken = `${app.url}${
+                                app.url.includes("?") ? "&" : "?"
+                              }token=${encodeURIComponent(
+                                token || ""
+                              )}&user=${encodeURIComponent(user || "")}`;
+                              window.open(urlWithToken, "_blank");
+                            } else {
+                              // Untuk aplikasi lain, buka URL biasa
+                              window.open(app.url, "_blank");
+                            }
                           }
-                        }}
-                      />
-
-                       <div
-                        className="absolute inset-0 z-0 cursor-pointer"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-
-                          const token = localStorage.getItem("token");
-                          const user = localStorage.getItem("user");
-
-                          if (!token || !user) {
-                            alert("Session expired. Please login again.");
-                            return;
-                          }
-
-                          // Build URL untuk AppsSMOE dengan token
-                          const appsMoeUrl = `http://localhost:3002/?token=${encodeURIComponent(
-                            token
-                          )}&user=${encodeURIComponent(user)}`;
-
-                          // Open in new tab
-                          window.open(appsMoeUrl, "_blank");
                         }}
                       />
                     </div>
