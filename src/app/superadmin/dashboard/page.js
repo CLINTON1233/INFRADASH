@@ -478,67 +478,88 @@ export default function SuperAdminDashboardPage() {
                 </div>
                 {/* Applications Grid - TETAPKAN GRID YANG SAMA */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-5 gap-4 sm:gap-6 md:gap-4">
-                  {filteredGroupedApps[category].map((app, index) => (
-                    <div
-                      key={index}
-                      className="relative cursor-pointer bg-blue-600 text-white p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-lg
-      transform transition-all duration-300 hover:bg-white hover:text-blue-600
-      hover:-translate-y-1 h-[140px] sm:h-[160px] flex flex-col justify-center items-center text-center group"
-                    >
-                      <div className="flex justify-center mb-2 sm:mb-3">
-                        <AppIcon
-                          iconName={app.icon}
-                          className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 transition-colors duration-300"
-                        />
-                      </div>
-                      <h3 className="text-xs sm:text-sm font-semibold mb-1 truncate max-w-[100px] sm:max-w-[120px] md:max-w-[140px]">
-                        {app.title}
-                      </h3>
-                      <div className="text-[10px] sm:text-xs truncate max-w-[100px] sm:max-w-[120px] md:max-w-[140px]">
-                        {app.fullName}
-                      </div>
+                {filteredGroupedApps[category].map((app, index) => {
+  // ✅ DEFINE isMonitoringApp di sini
+  const isMonitoringApp = 
+    app.title.toLowerCase().includes('monitoring') ||
+    app.fullName.toLowerCase().includes('monitoring') ||
+    app.url.includes('localhost:3005');
 
-                      {/* HANYA SATU CLICK HANDLER - PERIKSA APAKAH INI APPSSMOE ATAU BUKAN */}
-                      <div
-                        className="absolute inset-0 z-0 cursor-pointer"
-                        onClick={() => {
-                          const token = localStorage.getItem("token");
-                          const user = localStorage.getItem("user");
+  return (
+    <div
+      key={index}
+      className="relative cursor-pointer bg-blue-600 text-white p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-lg
+        transform transition-all duration-300 hover:bg-white hover:text-blue-600
+        hover:-translate-y-1 h-[140px] sm:h-[160px] flex flex-col justify-center items-center text-center group"
+    >
+      <div className="flex justify-center mb-2 sm:mb-3">
+        <AppIcon
+          iconName={app.icon}
+          className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 transition-colors duration-300"
+        />
+      </div>
+      <h3 className="text-xs sm:text-sm font-semibold mb-1 truncate max-w-[100px] sm:max-w-[120px] md:max-w-[140px]">
+        {app.title}
+      </h3>
+      <div className="text-[10px] sm:text-xs truncate max-w-[100px] sm:max-w-[120px] md:max-w-[140px]">
+        {app.fullName}
+      </div>
 
-                          // Cek apakah ini adalah aplikasi AppsSMOE atau bukan
-                          const isAppsSMOE =
-                            app.title.toLowerCase().includes("appssmoe") ||
-                            app.fullName.toLowerCase().includes("appssmoe") ||
-                            app.url.includes("localhost:3002");
+      {/* ✅ PERBAIKI CLICK HANDLER - URUTAN YANG BENAR */}
+      <div
+        className="absolute inset-0 z-0 cursor-pointer"
+        onClick={() => {
+          const token = localStorage.getItem("token");
+          const user = localStorage.getItem("user");
 
-                          if (isAppsSMOE) {
-                            // Jika ini AppsSMOE, kirim token dan user data
-                            const appsMoeUrl = `http://localhost:3002/?token=${encodeURIComponent(
-                              token
-                            )}&user=${encodeURIComponent(user)}`;
-                            window.open(appsMoeUrl, "_blank");
-                          } else {
-                            // Jika ini WebSSH, kirim token via query parameter
-                            if (
-                              app.url.includes("localhost:3001") ||
-                              app.url.includes("webssh")
-                            ) {
-                              const urlWithToken = `${app.url}${
-                                app.url.includes("?") ? "&" : "?"
-                              }token=${encodeURIComponent(
-                                token || ""
-                              )}&user=${encodeURIComponent(user || "")}`;
-                              window.open(urlWithToken, "_blank");
-                            } else {
-                              // Untuk aplikasi lain, buka URL biasa
-                              window.open(app.url, "_blank");
-                            }
-                          }
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
+          // ✅ URUTAN YANG BENAR:
+          // 1. Cek apakah ini Monitoring App
+          if (isMonitoringApp) {
+            // Redirect ke monitoring app dengan token
+            const monitoringUrl = `http://localhost:3005/auth/callback?token=${encodeURIComponent(
+              token
+            )}`;
+            window.open(monitoringUrl, "_blank");
+            return; // ⚠️ IMPORTANT: return agar tidak lanjut ke kode berikutnya
+          }
+
+          // 2. Cek apakah ini AppsSMOE
+          const isAppsSMOE =
+            app.title.toLowerCase().includes("appssmoe") ||
+            app.fullName.toLowerCase().includes("appssmoe") ||
+            app.url.includes("localhost:3002");
+
+          if (isAppsSMOE) {
+            // Jika ini AppsSMOE, kirim token dan user data
+            const appsMoeUrl = `http://localhost:3002/?token=${encodeURIComponent(
+              token
+            )}&user=${encodeURIComponent(user)}`;
+            window.open(appsMoeUrl, "_blank");
+            return;
+          }
+
+          // 3. Cek apakah ini WebSSH
+          if (
+            app.url.includes("localhost:3001") ||
+            app.url.includes("webssh")
+          ) {
+            const urlWithToken = `${app.url}${
+              app.url.includes("?") ? "&" : "?"
+            }token=${encodeURIComponent(
+              token || ""
+            )}&user=${encodeURIComponent(user || "")}`;
+            window.open(urlWithToken, "_blank");
+            return;
+          }
+
+          // 4. Untuk aplikasi lain, buka URL biasa
+          window.open(app.url, "_blank");
+        }}
+      />
+    </div>
+  );
+})}
+</div>
               </div>
             ))
           )}
