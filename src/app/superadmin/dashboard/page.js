@@ -484,9 +484,9 @@ export default function SuperAdminDashboardPage() {
                       app.fullName.toLowerCase().includes("monitoring") ||
                       app.url.includes("localhost:3005");
 
-                    const isBudgetApp =
-                      app.title.toLowerCase().includes("budget") ||
-                      app.fullName.toLowerCase().includes("budget") ||
+                    const isProcutrackApp =
+                      app.title.toLowerCase().includes("procutrack") ||
+                      app.fullName.toLowerCase().includes("procutrack") ||
                       app.url.includes("localhost:3003");
 
                     return (
@@ -525,12 +525,12 @@ export default function SuperAdminDashboardPage() {
                               return;
                             }
 
-                            // ✅ 2. Cek apakah ini Budget App (PORT 3003)
-                            if (isBudgetApp) {
-                              const budgetUrl = `http://localhost:3003/auth/callback?token=${encodeURIComponent(
+                            // ✅ 2. Cek apakah ini Procutrack App (PORT 3003)
+                            if (isProcutrackApp) {
+                              const ProcutrackUrl = `http://localhost:3003/auth/callback?token=${encodeURIComponent(
                                 token,
                               )}`;
-                              window.open(budgetUrl, "_blank");
+                              window.open(ProcutrackUrl, "_blank");
                               return;
                             }
 
