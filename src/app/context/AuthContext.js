@@ -2,40 +2,79 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { API_ENDPOINTS } from "../../config/api";
 
 const AuthContext = createContext();
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 menit dalam milidetik
+const SESSION_CHECK_INTERVAL = 60 * 1000; // Cek setiap 1 menit
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lastActivity, setLastActivity] = useState(Date.now());
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     checkAuth();
-  }, []);
+
+    // Setup activity listeners
+    const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+    const updateActivity = () => setLastActivity(Date.now());
+
+    activityEvents.forEach(event => {
+      window.addEventListener(event, updateActivity);
+    });
+
+    // Session timeout checker
+    const sessionInterval = setInterval(() => {
+      const timeSinceLastActivity = Date.now() - lastActivity;
+      if (timeSinceLastActivity > SESSION_TIMEOUT) {
+        console.log('Session timeout due to inactivity');
+        logout();
+      }
+    }, SESSION_CHECK_INTERVAL);
+
+    return () => {
+      activityEvents.forEach(event => {
+        window.removeEventListener(event, updateActivity);
+      });
+      clearInterval(sessionInterval);
+    };
+  }, [lastActivity]);
 
   useEffect(() => {
-    // Check authentication on route change
     if (!loading) {
       checkRouteAccess();
     }
   }, [pathname, loading]);
 
-  const checkAuth = () => {
+  const checkAuth = async () => {
     try {
-      const storedUser = localStorage.getItem("user");
-      const storedToken = localStorage.getItem("token");
-
-      if (storedUser) {
-        const userObj = JSON.parse(storedUser);
-
-        // jika token ada, tambahkan ke user
-        if (storedToken) {
-          userObj.token = storedToken;
+      // Cek session ke backend menggunakan API_ENDPOINTS
+      const response = await fetch(API_ENDPOINTS.CHECK_SESSION, {
+        credentials: 'include', // Penting: untuk mengirim cookie
+        headers: {
+          'Accept': 'application/json',
         }
+      });
 
-        setUser(userObj);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.authenticated && data.user) {
+        setUser(data.user);
+        setLastActivity(Date.now());
+
+        // Update localStorage sebagai fallback
+        localStorage.setItem("user", JSON.stringify(data.user));
+      } else {
+        setUser(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
       }
     } catch (error) {
       console.error("Error checking auth:", error);
@@ -46,45 +85,18 @@ export function AuthProvider({ children }) {
   };
 
   const checkRouteAccess = () => {
-    // Routes yang boleh diakses tanpa login
     const publicRoutes = ["/landing-page", "/login", "/register"];
 
     if (loading) return;
 
-    // Jika user belum login dan mencoba akses protected route
     if (!user && !publicRoutes.includes(pathname)) {
       router.push("/login");
       return;
     }
 
-    // Jika user sudah login tapi mencoba akses login/register
     if (user && (pathname === "/login" || pathname === "/register")) {
       redirectBasedOnRole();
-      return;
     }
-
-    // Check role-based access
-    if (user && !checkRoleAccess(pathname, user.role)) {
-      // Redirect ke dashboard sesuai role
-      redirectBasedOnRole();
-    }
-  };
-
-  const checkRoleAccess = (path, userRole) => {
-    // Superadmin bisa akses semua routes
-    if (userRole === "superadmin") return true;
-
-    // Admin tidak bisa akses superadmin routes
-    if (userRole === "admin" && path.startsWith("/superadmin")) {
-      return false;
-    }
-
-    // User biasa hanya bisa akses /dashboard
-    if (userRole === "user" && !path.startsWith("/dashboard")) {
-      return false;
-    }
-
-    return true;
   };
 
   const redirectBasedOnRole = () => {
@@ -99,19 +111,44 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const login = (userData) => {
+  const login = async (userData) => {
     setUser(userData);
+    setLastActivity(Date.now());
 
+    // Simpan di localStorage untuk fallback
     localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("token", userData.token); // Pastikan token disimpan
+    if (userData.token) {
+      localStorage.setItem("token", userData.token);
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token"); // TAMBAHKAN INI
-    sessionStorage.removeItem("loginSuccessShown");
-    router.push("/login");
+  const logout = async () => {
+    try {
+      // Panggil endpoint logout di backend menggunakan API_ENDPOINTS
+      await fetch(API_ENDPOINTS.LOGOUT, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      sessionStorage.removeItem("loginSuccessShown");
+
+      // Hapus semua cookie client-side
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=; expires=" + new Date().toUTCString() + "; path=/");
+      });
+
+      router.push("/login");
+    }
   };
 
   const value = {

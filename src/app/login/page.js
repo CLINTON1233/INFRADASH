@@ -31,14 +31,15 @@ export default function LoginPage() {
       const res = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        credentials: 'include',
+        body: JSON.stringify(formData), // <--- INI YANG KURANG!
       });
 
       const data = await res.json();
       console.log(data);
 
       if (data.status === "success") {
-        localStorage.setItem("token", data.token); // Simpan di localStorage
+        localStorage.setItem("token", data.token);
         const user = data.user;
 
         login({
@@ -49,7 +50,7 @@ export default function LoginPage() {
           telp: user.telp || "",
           departemen: user.departemen || "",
           role: user.role,
-          token: data.token, // Juga simpan di user object
+          token: data.token,
         });
 
         await Swal.fire({
@@ -160,35 +161,35 @@ export default function LoginPage() {
           </div>
 
           {/* Password */}
-       <div>
-  <label htmlFor="password" className="block text-base text-gray-700 mb-2">
-    Password
-  </label>
+          <div>
+            <label htmlFor="password" className="block text-base text-gray-700 mb-2">
+              Password
+            </label>
 
-  <div className="relative">
-    <input
-      type={showPassword ? "text" : "password"}
-      id="password"
-      name="password"
-      value={formData.password}
-      onChange={handleChange}
-      required
-      className="w-full px-5 py-3 pr-12 border border-gray-300 rounded-md text-base text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-    />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-5 py-3 pr-12 border border-gray-300 rounded-md text-base text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
 
-    <button
-      type="button"
-      onClick={() => setShowPassword(!showPassword)}
-      className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
-    >
-      {showPassword ? (
-        <EyeOff className="w-5 h-5" />
-      ) : (
-        <Eye className="w-5 h-5" />
-      )}
-    </button>
-  </div>
-</div>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+          </div>
 
 
           {/* Submit */}

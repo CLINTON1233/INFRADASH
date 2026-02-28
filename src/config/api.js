@@ -5,6 +5,10 @@ export const API_ENDPOINTS = {
   // Auth
   LOGIN: `${API_BASE_URL}/users/login`,
   REGISTER: `${API_BASE_URL}/users/register`,
+  LOGOUT: `${API_BASE_URL}/users/logout`,
+  CHECK_SESSION: `${API_BASE_URL}/users/check-session`,
+  VERIFY_TOKEN: `${API_BASE_URL}/users/verify-token`,
+  VERIFY_MONITORING: `${API_BASE_URL}/users/verify-for-monitoring`,
 
   // Users
   USERS: `${API_BASE_URL}/users`,
