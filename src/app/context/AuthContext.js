@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { API_ENDPOINTS } from "../../config/api";
 
 const AuthContext = createContext();
-const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 menit dalam milidetik
+const expireTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Jam
 const SESSION_CHECK_INTERVAL = 60 * 1000; // Cek setiap 1 menit
 
 export function AuthProvider({ children }) {
