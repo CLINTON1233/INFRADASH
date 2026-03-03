@@ -2,10 +2,17 @@
 
 import { useAuth } from '../context/AuthContext';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function ProtectedRoute({ children, requiredRole }) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      window.location.href = "/login";
+    }
+  }, [loading, user]);
 
   if (loading) {
     return (
@@ -16,7 +23,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
   }
 
   if (!user) {
-    return null; // AuthProvider akan handle redirect
+    return null;
   }
 
   // Check role-based access
