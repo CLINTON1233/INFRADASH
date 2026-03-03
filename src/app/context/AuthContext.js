@@ -7,6 +7,7 @@ import { API_ENDPOINTS } from "../../config/api";
 const AuthContext = createContext();
 const SESSION_CHECK_INTERVAL = 60 * 1000; // Cek setiap 1 menit
 const SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 jam
+// const SESSION_TIMEOUT = 1 * 60 * 1000; // 1 menit untuk testing
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
