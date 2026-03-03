@@ -7,6 +7,8 @@ import { API_ENDPOINTS } from "../../config/api";
 const AuthContext = createContext();
 const expireTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Jam
 const SESSION_CHECK_INTERVAL = 60 * 1000; // Cek setiap 1 menit
+// Timeout setelah 30 menit tidak aktif (dapat diubah sesuai kebutuhan)
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 menit
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -50,6 +52,14 @@ export function AuthProvider({ children }) {
   }, [pathname, loading]);
 
   const checkAuth = async () => {
+    // jika pengguna offline, jangan panggil backend, hanya reset state
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      console.warn('Offline: skip auth check');
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       // Cek session ke backend menggunakan API_ENDPOINTS
       const response = await fetch(API_ENDPOINTS.CHECK_SESSION, {
@@ -60,7 +70,11 @@ export function AuthProvider({ children }) {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // tidak dianggap sebagai kegagalan jaringan, cukup set ulang user
+        setUser(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        return;
       }
 
       const data = await response.json();
@@ -77,7 +91,17 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("token");
       }
     } catch (error) {
-      console.error("Error checking auth:", error);
+      // suppress the common "Failed to fetch" noise
+      if (
+        error instanceof Error &&
+        error.name === 'TypeError' &&
+        error.message.includes('Failed to fetch')
+      ) {
+        // network error or backend down; quietly drop user state
+        console.debug('Auth check skipped, network failure');
+      } else {
+        console.error("Error checking auth:", error);
+      }
       setUser(null);
     } finally {
       setLoading(false);
